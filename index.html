@@ -3,527 +3,1506 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Сила Архимеда — 7 класс</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <script>
-        tailwind.config = {
-            theme: { extend: { fontFamily: { sans:['Rubik','sans-serif'], mono:['JetBrains Mono','monospace'] } } }
-        }
-    </script>
+    <title>Физика 7 класс — Виртуальные эксперименты</title>
+    <link href="https://cdn.jsdelivr.net/npm/fontsource-inter@5.0.18/index.min.css" rel="stylesheet">
     <style>
-        :root {
-            --bg:#eef1f5;--card:#ffffff;--border:#d5dbe3;--fg:#1a2536;--muted:#6b7d92;
-            --accent:#009e6f;--red:#d63a2a;--yellow:#c4850a;--blue:#1a7abd;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #0a0e1a; color: #e0e6f0; min-height: 100vh; }
+        
+        .app-header {
+            background: linear-gradient(135deg, #1a1f3a 0%, #0d1225 100%);
+            border-bottom: 1px solid rgba(100, 140, 255, 0.15);
+            padding: 20px 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
-        *{margin:0;padding:0;box-sizing:border-box}
-        body{background:var(--bg);color:var(--fg);font-family:'Rubik',sans-serif;overflow-x:hidden}
+        .app-header .logo { font-size: 28px; }
+        .app-header h1 { font-size: 22px; font-weight: 700; background: linear-gradient(135deg, #60a5fa, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .app-header .subtitle { font-size: 13px; color: #8892b0; margin-top: 2px; }
 
-        input[type="range"]{-webkit-appearance:none;appearance:none;width:100%;height:10px;border-radius:5px;background:var(--border);outline:none;cursor:pointer}
-        input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:34px;height:34px;border-radius:50%;background:var(--accent);cursor:pointer;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.18)}
-        input[type="range"]::-moz-range-thumb{width:34px;height:34px;border-radius:50%;background:var(--accent);border:3px solid #fff;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.18)}
-        input[type="range"].red-sl::-webkit-slider-thumb{background:var(--red)}
-        input[type="range"].red-sl::-moz-range-thumb{background:var(--red)}
-        input[type="range"].yellow-sl::-webkit-slider-thumb{background:var(--yellow)}
-        input[type="range"].yellow-sl::-moz-range-thumb{background:var(--yellow)}
+        .nav-tabs {
+            display: flex;
+            gap: 6px;
+            padding: 12px 30px;
+            background: #0d1225;
+            overflow-x: auto;
+            border-bottom: 1px solid rgba(100, 140, 255, 0.1);
+        }
+        .nav-tab {
+            padding: 10px 18px;
+            border-radius: 10px;
+            border: 1px solid rgba(100, 140, 255, 0.15);
+            background: rgba(30, 35, 60, 0.5);
+            color: #8892b0;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            white-space: nowrap;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .nav-tab:hover { background: rgba(60, 70, 120, 0.5); color: #c0c8e0; }
+        .nav-tab.active {
+            background: linear-gradient(135deg, rgba(96, 165, 250, 0.2), rgba(167, 139, 250, 0.2));
+            border-color: rgba(96, 165, 250, 0.4);
+            color: #60a5fa;
+        }
+        .nav-tab .tab-icon { font-size: 16px; }
 
-        .sel-btn{padding:8px 14px;border-radius:10px;border:2px solid var(--border);background:var(--card);color:var(--fg);font-family:'Rubik',sans-serif;font-size:15px;font-weight:500;cursor:pointer;transition:all .15s;white-space:nowrap;touch-action:manipulation;box-shadow:0 1px 3px rgba(0,0,0,0.06)}
-        .sel-btn:hover{border-color:var(--accent);background:rgba(0,158,111,0.06)}
-        .sel-btn.on{border-color:var(--accent);background:rgba(0,158,111,0.1);color:var(--accent);font-weight:700}
-        .sel-btn.rd:hover{border-color:var(--red);background:rgba(214,58,42,0.06)}
-        .sel-btn.rd.on{border-color:var(--red);background:rgba(214,58,42,0.1);color:var(--red);font-weight:700}
+        .experiment-container {
+            display: none;
+            padding: 25px 30px;
+            animation: fadeIn 0.4s ease;
+        }
+        .experiment-container.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .panel{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px 20px;box-shadow:0 2px 12px rgba(0,0,0,0.05)}
-        canvas{display:block;border-radius:16px;touch-action:none}
-        .no-sel{-webkit-user-select:none;user-select:none}
-        @keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
-        .blink{animation:blink 1.4s ease-in-out infinite}
-        @media(prefers-reduced-motion:reduce){.blink{animation:none}}
+        .exp-header { margin-bottom: 20px; }
+        .exp-header h2 { font-size: 20px; font-weight: 700; color: #c0c8e0; }
+        .exp-header .formula { 
+            display: inline-block; 
+            margin-top: 8px; 
+            padding: 8px 16px; 
+            background: rgba(96, 165, 250, 0.1); 
+            border: 1px solid rgba(96, 165, 250, 0.2); 
+            border-radius: 8px; 
+            font-family: 'Courier New', monospace; 
+            font-size: 15px; 
+            color: #60a5fa; 
+        }
+        .exp-header .description { margin-top: 10px; color: #8892b0; font-size: 14px; line-height: 1.6; }
+
+        .sim-layout {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 20px;
+            align-items: start;
+        }
+        @media (max-width: 900px) {
+            .sim-layout { grid-template-columns: 1fr; }
+        }
+
+        .canvas-wrapper {
+            background: #111628;
+            border-radius: 16px;
+            border: 1px solid rgba(100, 140, 255, 0.1);
+            overflow: hidden;
+            position: relative;
+        }
+        .canvas-wrapper canvas {
+            display: block;
+            width: 100%;
+            background: #0a0e1a;
+        }
+
+        .controls-panel {
+            background: #111628;
+            border-radius: 16px;
+            border: 1px solid rgba(100, 140, 255, 0.1);
+            padding: 20px;
+        }
+        .controls-panel h3 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #8892b0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+        }
+
+        .control-group { margin-bottom: 18px; }
+        .control-group label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            color: #a0a8c0;
+            margin-bottom: 6px;
+        }
+        .control-group label .value {
+            color: #60a5fa;
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
+        }
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            -webkit-appearance: none;
+            background: #1a2040;
+            border-radius: 3px;
+            outline: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #60a5fa, #a78bfa);
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(96, 165, 250, 0.3);
+        }
+
+        .results-panel {
+            background: rgba(96, 165, 250, 0.05);
+            border: 1px solid rgba(96, 165, 250, 0.15);
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+        .results-panel h4 {
+            font-size: 12px;
+            color: #8892b0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(100, 140, 255, 0.05);
+            font-size: 13px;
+        }
+        .result-item:last-child { border-bottom: none; }
+        .result-item .r-label { color: #8892b0; }
+        .result-item .r-value { color: #60a5fa; font-weight: 600; font-family: 'Courier New', monospace; }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.3s;
+            font-family: 'Inter', sans-serif;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6, #6366f1);
+            color: white;
+            width: 100%;
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(59, 130, 246, 0.3); }
+        .btn-secondary {
+            background: rgba(100, 140, 255, 0.1);
+            border: 1px solid rgba(100, 140, 255, 0.2);
+            color: #8892b0;
+            width: 100%;
+            margin-top: 8px;
+        }
+        .btn-secondary:hover { background: rgba(100, 140, 255, 0.2); color: #c0c8e0; }
+
+        .info-box {
+            background: rgba(250, 204, 21, 0.05);
+            border: 1px solid rgba(250, 204, 21, 0.2);
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 15px;
+            font-size: 12px;
+            color: #d4a843;
+            line-height: 1.6;
+        }
+        .info-box strong { color: #f0c040; }
+
+        select {
+            width: 100%;
+            padding: 8px 12px;
+            background: #1a2040;
+            border: 1px solid rgba(100, 140, 255, 0.2);
+            border-radius: 8px;
+            color: #c0c8e0;
+            font-size: 13px;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            cursor: pointer;
+        }
+        select:focus { border-color: rgba(96, 165, 250, 0.5); }
+
+        .legend {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 11px;
+            color: #8892b0;
+        }
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+            font-size: 13px;
+            color: #a0a8c0;
+            cursor: pointer;
+        }
+        .checkbox-group input[type="checkbox"] {
+            accent-color: #60a5fa;
+            width: 16px;
+            height: 16px;
+        }
     </style>
 </head>
-<body class="no-sel">
+<body>
 
-    <header class="text-center pt-4 pb-3 px-4">
-        <h1 class="text-3xl md:text-5xl font-black tracking-tight">Сила Архимеда</h1>
-        <p class="text-base md:text-lg mt-1" style="color:var(--muted)">Выталкивающая сила, действующая на тело, погружённое в жидкость</p>
-    </header>
+<div class="app-header">
+    <div class="logo">⚛️</div>
+    <div>
+        <h1>Физика 7 класс — Виртуальные эксперименты</h1>
+        <div class="subtitle">По учебнику А.В. Перышкина • Интерактивный симулятор</div>
+    </div>
+</div>
 
-    <main class="max-w-[1500px] mx-auto px-3 pb-6">
-        <div class="grid grid-cols-1 lg:grid-cols-[1fr_370px] gap-4">
-            <div class="relative" id="canvasWrap">
-                <canvas id="sim" aria-label="Симуляция силы Архимеда"></canvas>
-                <div id="dragHint" class="absolute bottom-4 left-1/2 -translate-x-1/2 px-5 py-2 rounded-xl text-base font-semibold pointer-events-none"
-                    style="background:rgba(255,255,255,0.88);color:var(--muted);box-shadow:0 2px 10px rgba(0,0,0,0.1)">
-                    <i class="fa-solid fa-hand-pointer mr-1"></i> Перетащите тело вверх или вниз
-                </div>
+<div class="nav-tabs" id="navTabs">
+    <div class="nav-tab active" data-tab="motion"><span class="tab-icon">🚗</span> Движение и скорость</div>
+    <div class="nav-tab" data-tab="density"><span class="tab-icon">🧊</span> Плотность веществ</div>
+    <div class="nav-tab" data-tab="friction"><span class="tab-icon">🔧</span> Сила трения</div>
+    <div class="nav-tab" data-tab="pressure"><span class="tab-icon">📐</span> Давление</div>
+    <div class="nav-tab" data-tab="archimedes"><span class="tab-icon">🚢</span> Закон Архимеда</div>
+    <div class="nav-tab" data-tab="molecules"><span class="tab-icon">🔬</span> Молекулы</div>
+    <div class="nav-tab" data-tab="lever"><span class="tab-icon">⚖️</span> Рычаг</div>
+    <div class="nav-tab" data-tab="work"><span class="tab-icon">💪</span> Работа и мощность</div>
+</div>
+
+<!-- 1. MOTION -->
+<div class="experiment-container active" id="exp-motion">
+    <div class="exp-header">
+        <h2>🚗 Механическое движение. Скорость</h2>
+        <div class="formula">v = S / t &nbsp;&nbsp;|&nbsp;&nbsp; S = v · t &nbsp;&nbsp;|&nbsp;&nbsp; t = S / v</div>
+        <div class="description">Исследуйте равномерное движение тела. Изменяйте скорость и наблюдайте за пройденным расстоянием и временем. Сравните движение двух тел с разными скоростями.</div>
+    </div>
+    <div class="sim-layout">
+        <div class="canvas-wrapper">
+            <canvas id="canvasMotion" width="700" height="350"></canvas>
+            <div class="legend">
+                <div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div> Тело 1</div>
+                <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div> Тело 2</div>
+                <div class="legend-item"><div class="legend-dot" style="background:#10b981"></div> Расстояние</div>
             </div>
-
-            <aside class="space-y-3">
-                <div class="panel" style="border-color:rgba(0,158,111,0.3);background:rgba(0,158,111,0.04)">
-                    <div class="text-sm font-bold mb-1" style="color:var(--accent)">Закон Архимеда</div>
-                    <div class="font-mono text-xl md:text-2xl font-bold leading-snug">F<sub>выт</sub> = ρ<sub>ж</sub> &middot; g &middot; V<sub>погр</sub></div>
-                    <div class="text-xs mt-1" style="color:var(--muted)">g = 9,8 м/с&sup2;</div>
-                </div>
-
-                <div class="panel">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-base font-bold"><i class="fa-solid fa-droplet mr-1" style="color:var(--accent)"></i> Плотность жидкости</span>
-                        <span class="font-mono text-xl font-bold" style="color:var(--accent)" id="vRhoL">1000</span>
-                    </div>
-                    <div class="text-xs mb-2" style="color:var(--muted)">ρ<sub>ж</sub>, кг/м&sup3;</div>
-                    <input type="range" id="sRhoL" min="700" max="13600" value="1000" step="10">
-                    <div class="flex flex-wrap gap-2 mt-3">
-                        <button class="sel-btn" data-d="920" onclick="pickLiq(this)">Масло 920</button>
-                        <button class="sel-btn on" data-d="1000" onclick="pickLiq(this)">Вода 1000</button>
-                        <button class="sel-btn" data-d="1030" onclick="pickLiq(this)">Морская 1030</button>
-                        <button class="sel-btn" data-d="1260" onclick="pickLiq(this)">Глицерин 1260</button>
-                        <button class="sel-btn" data-d="13600" onclick="pickLiq(this)">Ртуть 13600</button>
-                    </div>
-                </div>
-
-                <div class="panel">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-base font-bold"><i class="fa-solid fa-water mr-1" style="color:var(--blue)"></i> Погружение</span>
-                        <span class="font-mono text-xl font-bold" style="color:var(--blue)" id="vSub">50%</span>
-                    </div>
-                    <div class="text-xs mb-2" style="color:var(--muted)">Доля объёма тела под водой</div>
-                    <input type="range" class="yellow-sl" id="sSub" min="0" max="100" value="50" step="1">
-                </div>
-
-                <div class="panel">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-base font-bold"><i class="fa-solid fa-cube mr-1" style="color:var(--red)"></i> Плотность тела</span>
-                        <span class="font-mono text-xl font-bold" style="color:var(--red)" id="vRhoB">2700</span>
-                    </div>
-                    <div class="text-xs mb-2" style="color:var(--muted)">ρ<sub>т</sub>, кг/м&sup3;</div>
-                    <input type="range" class="red-sl" id="sRhoB" min="100" max="11340" value="2700" step="10">
-                    <div class="flex flex-wrap gap-2 mt-3">
-                        <button class="sel-btn rd" data-d="600" onclick="pickMat(this)">Пробка 600</button>
-                        <button class="sel-btn rd" data-d="900" onclick="pickMat(this)">Дерево 900</button>
-                        <button class="sel-btn rd on" data-d="2700" onclick="pickMat(this)">Алюминий 2700</button>
-                        <button class="sel-btn rd" data-d="7800" onclick="pickMat(this)">Железо 7800</button>
-                        <button class="sel-btn rd" data-d="11340" onclick="pickMat(this)">Свинец 11340</button>
-                    </div>
-                </div>
-
-                <div class="panel">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-base font-bold"><i class="fa-solid fa-expand mr-1"></i> Объём тела</span>
-                        <span class="font-mono text-lg font-bold" id="vVol">1,00 л</span>
-                    </div>
-                    <div class="text-xs mb-2" style="color:var(--muted)">V<sub>т</sub></div>
-                    <input type="range" id="sVol" min="200" max="10000" value="1000" step="50">
-                </div>
-
-                <div class="panel space-y-3" style="background:linear-gradient(160deg,#fff,#f4f7fa)">
-                    <div class="text-center">
-                        <div id="badge" class="inline-flex items-center gap-2 px-5 py-2 rounded-full text-lg font-bold" style="background:rgba(214,58,42,0.1);color:var(--red)">
-                            <span class="w-3 h-3 rounded-full blink" style="background:var(--red)"></span>
-                            <span id="statusTxt">Тонет</span>
-                        </div>
-                        <div class="text-xs mt-1" style="color:var(--muted)" id="statusDesc">Сила тяжести больше выталкивающей</div>
-                    </div>
-                    <div class="grid grid-cols-3 gap-3 text-center">
-                        <div>
-                            <div class="text-xs font-semibold mb-1" style="color:var(--accent)">F<sub>выт</sub></div>
-                            <div class="font-mono text-2xl font-bold" style="color:var(--accent)" id="vFa">4,90</div>
-                            <div class="text-xs" style="color:var(--muted)">Н</div>
-                        </div>
-                        <div>
-                            <div class="text-xs font-semibold mb-1" style="color:var(--red)">F<sub>тяж</sub></div>
-                            <div class="font-mono text-2xl font-bold" style="color:var(--red)" id="vFg">26,46</div>
-                            <div class="text-xs" style="color:var(--muted)">Н</div>
-                        </div>
-                        <div>
-                            <div class="text-xs font-semibold mb-1" style="color:var(--yellow)">F<sub>рез</sub></div>
-                            <div class="font-mono text-2xl font-bold" style="color:var(--yellow)" id="vFn">21,56</div>
-                            <div class="text-xs" style="color:var(--muted)" id="vFnDir">Н вниз</div>
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-3 gap-3 text-center text-xs pt-2" style="border-top:1px solid var(--border);color:var(--muted)">
-                        <div>Масса: <span class="font-mono font-semibold" style="color:var(--fg)" id="vMass">2,70 кг</span></div>
-                        <div>V<sub>погр</sub>: <span class="font-mono font-semibold" style="color:var(--fg)" id="vVsub">0,50 л</span></div>
-                        <div>ρ<sub>т</sub>/ρ<sub>ж</sub>: <span class="font-mono font-semibold" style="color:var(--fg)" id="vRatio">2,70</span></div>
-                    </div>
-                </div>
-            </aside>
         </div>
-    </main>
+        <div class="controls-panel">
+            <h3>Параметры</h3>
+            <div class="control-group">
+                <label>Скорость тела 1 <span class="value" id="v1Val">10</span> м/с</label>
+                <input type="range" id="v1" min="1" max="50" value="10">
+            </div>
+            <div class="control-group">
+                <label>Скорость тела 2 <span class="value" id="v2Val">20</span> м/с</label>
+                <input type="range" id="v2" min="1" max="50" value="20">
+            </div>
+            <div class="control-group">
+                <label>Расстояние <span class="value" id="distVal">200</span> м</label>
+                <input type="range" id="dist" min="50" max="500" value="200">
+            </div>
+            <button class="btn btn-primary" id="startMotion">▶ Старт</button>
+            <button class="btn btn-secondary" id="resetMotion">↺ Сброс</button>
+            <div class="results-panel">
+                <h4>Результаты</h4>
+                <div class="result-item"><span class="r-label">Время тела 1:</span><span class="r-value" id="t1Result">—</span></div>
+                <div class="result-item"><span class="r-label">Время тела 2:</span><span class="r-value" id="t2Result">—</span></div>
+                <div class="result-item"><span class="r-label">Текущее время:</span><span class="r-value" id="currentTime">0.0 с</span></div>
+            </div>
+            <div class="info-box">
+                <strong>💡 Напомним:</strong> При равномерном движении скорость не меняется. Тело за равные промежутки времени проходит равные расстояния.
+            </div>
+        </div>
+    </div>
+</div>
 
-    <script>
-    const G = 9.8;
-    let tRhoL=1000, tRhoB=2700, tSub=50, tVol=1000;
-    let cRhoL=1000, cRhoB=2700, cSub=50, cVol=1000;
-    let dragging=false, dragOff=0, time=0, hintShown=true;
+<!-- 2. DENSITY -->
+<div class="experiment-container" id="exp-density">
+    <div class="exp-header">
+        <h2>🧊 Плотность вещества</h2>
+        <div class="formula">ρ = m / V &nbsp;&nbsp;|&nbsp;&nbsp; ρ (кг/м³)</div>
+        <div class="description">Поместите тело в жидкость и наблюдайте: будет ли оно плавать или тонуть. Изменяйте плотность тела и жидкости в реальном времени.</div>
+    </div>
+    <div class="sim-layout">
+        <div class="canvas-wrapper">
+            <canvas id="canvasDensity" width="700" height="400"></canvas>
+            <div class="legend">
+                <div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div> Вода</div>
+                <div class="legend-item"><div class="legend-dot" style="background:#ef4444"></div> Тело</div>
+            </div>
+        </div>
+        <div class="controls-panel">
+            <h3>Параметры</h3>
+            <div class="control-group">
+                <label>Плотность тела <span class="value" id="bodyDensityVal">7800</span> кг/м³</label>
+                <input type="range" id="bodyDensity" min="100" max="20000" value="7800" step="100">
+            </div>
+            <div class="control-group">
+                <label>Плотность жидкости <span class="value" id="fluidDensityVal">1000</span> кг/м³</label>
+                <input type="range" id="fluidDensity" min="200" max="3000" value="1000" step="50">
+            </div>
+            <div class="control-group">
+                <label>Масса тела <span class="value" id="bodyMassVal">1.0</span> кг</label>
+                <input type="range" id="bodyMass" min="0.1" max="5" value="1" step="0.1">
+            </div>
+            <button class="btn btn-primary" id="dropObject">🔽 Бросить в воду</button>
+            <button class="btn btn-secondary" id="resetDensity">↺ Сброс</button>
+            <div class="control-group" style="margin-top:15px">
+                <label>Материал:</label>
+                <select id="materialSelect">
+                    <option value="100">Пенопласт</option>
+                    <option value="400">Дерево</option>
+                    <option value="900">Лёд</option>
+                    <option value="1000">Вода</option>
+                    <option value="2700">Алюминий</option>
+                    <option value="7800" selected>Железо</option>
+                    <option value="11300">Свинец</option>
+                    <option value="19300">Золото</option>
+                </select>
+            </div>
+            <div class="results-panel">
+                <h4>Результаты</h4>
+                <div class="result-item"><span class="r-label">Состояние:</span><span class="r-value" id="stateResult">—</span></div>
+                <div class="result-item"><span class="r-label">Объём тела:</span><span class="r-value" id="volumeResult">—</span></div>
+                <div class="result-item"><span class="r-label">F тяжести:</span><span class="r-value" id="gravityForce">—</span></div>
+                <div class="result-item"><span class="r-label">F Архимеда:</span><span class="r-value" id="archForce">—</span></div>
+            </div>
+            <div class="info-box">
+                <strong>💡 Правило плавания:</strong> Если ρ тела &lt; ρ жидкости — тело плавает. Если ρ тела &gt; ρ жидкости — тело тонет.
+            </div>
+        </div>
+    </div>
+</div>
 
-    const cvs=document.getElementById('sim'), ctx=cvs.getContext('2d');
-    /* Увеличенный canvas */
-    const W=740, H=620;
-    /* Увеличенный бак */
-    const TK={x:35, y:10, w:670, h:590, wall:8, surfY:165};
-    /* Увеличенное тело */
-    const BD={w:140, h:140};
+<!-- 3. FRICTION -->
+<div class="experiment-container" id="exp-friction">
+    <div class="exp-header">
+        <h2>🔧 Сила трения</h2>
+        <div class="formula">F трения = μ · N &nbsp;&nbsp;|&nbsp;&nbsp; F тяги — F трения = m · a</div>
+        <div class="description">Исследуйте силу трения скольжения. Приложите силу к бруску и наблюдайте, преодолеет ли он силу трения. Изменяйте массу, коэффициент трения и приложенную силу.</div>
+    </div>
+    <div class="sim-layout">
+        <div class="canvas-wrapper">
+            <canvas id="canvasFriction" width="700" height="350"></canvas>
+        </div>
+        <div class="controls-panel">
+            <h3>Параметры</h3>
+            <div class="control-group">
+                <label>Приложенная сила <span class="value" id="appliedForceVal">0</span> Н</label>
+                <input type="range" id="appliedForce" min="0" max="100" value="0" step="1">
+            </div>
+            <div class="control-group">
+                <label>Масса бруска <span class="value" id="frictionMassVal">2</span> кг</label>
+                <input type="range" id="frictionMass" min="0.5" max="10" value="2" step="0.5">
+            </div>
+            <div class="control-group">
+                <label>Коэф. трения μ <span class="value" id="muVal">0.30</span></label>
+                <input type="range" id="mu" min="0.05" max="1.0" value="0.3" step="0.05">
+            </div>
+            <div class="control-group">
+                <label>Поверхность:</label>
+                <select id="surfaceSelect">
+                    <option value="0.05">Лёд (μ=0.05)</option>
+                    <option value="0.2">Дерево (μ=0.2)</option>
+                    <option value="0.3" selected>Металл (μ=0.3)</option>
+                    <option value="0.5">Резина (μ=0.5)</option>
+                    <option value="0.8">Бетон (μ=0.8)</option>
+                    <option value="1.0">Наждачная (μ=1.0)</option>
+                </select>
+            </div>
+            <button class="btn btn-primary" id="pushFriction">▶ Применить силу</button>
+            <button class="btn btn-secondary" id="resetFriction">↺ Сброс</button>
+            <div class="results-panel">
+                <h4>Результаты</h4>
+                <div class="result-item"><span class="r-label">F трения макс:</span><span class="r-value" id="maxFriction">—</span></div>
+                <div class="result-item"><span class="r-label">Результирующая F:</span><span class="r-value" id="netForce">—</span></div>
+                <div class="result-item"><span class="r-label">Ускорение:</span><span class="r-value" id="acceleration">—</span></div>
+                <div class="result-item"><span class="r-label">Скорость:</span><span class="r-value" id="frictionVelocity">—</span></div>
+                <div class="result-item"><span class="r-label">Движение:</span><span class="r-value" id="frictionState">Покой</span></div>
+            </div>
+        </div>
+    </div>
+</div>
 
-    function resize(){
-        const mw=document.getElementById('canvasWrap').clientWidth;
-        const sc=Math.min(mw/W,1);
-        cvs.style.width=(W*sc)+'px';
-        cvs.style.height=(H*sc)+'px';
-        const dpr=Math.min(window.devicePixelRatio||1,2);
-        cvs.width=W*dpr; cvs.height=H*dpr;
-        ctx.setTransform(dpr,0,0,dpr,0,0);
+<!-- 4. PRESSURE -->
+<div class="experiment-container" id="exp-pressure">
+    <div class="exp-header">
+        <h2>📐 Давление твёрдых тел</h2>
+        <div class="formula">p = F / S &nbsp;&nbsp;|&nbsp;&nbsp; F = m · g &nbsp;&nbsp;|&nbsp;&nbsp; p (Па)</div>
+        <div class="description">Исследуйте, как давление зависит от площади опоры и силы. Один и тот же вес создаёт разное давление при разной площади опоры.</div>
+    </div>
+    <div class="sim-layout">
+        <div class="canvas-wrapper">
+            <canvas id="canvasPressure" width="700" height="400"></canvas>
+            <div class="legend">
+                <div class="legend-item"><div class="legend-dot" style="background:#ef4444"></div> Область давления</div>
+                <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div> Деформация поверхности</div>
+            </div>
+        </div>
+        <div class="controls-panel">
+            <h3>Параметры</h3>
+            <div class="control-group">
+                <label>Масса груза <span class="value" id="pressMassVal">5</span> кг</label>
+                <input type="range" id="pressMass" min="1" max="50" value="5">
+            </div>
+            <div class="control-group">
+                <label>Площадь опоры <span class="value" id="pressAreaVal">0.0010</span> м²</label>
+                <input type="range" id="pressArea" min="1" max="100" value="10">
+            </div>
+            <div class="control-group">
+                <label>Форма опоры:</label>
+                <select id="shapeSelect">
+                    <option value="block">Брусок (стоит на грани)</option>
+                    <option value="wide">Широкая плита</option>
+                    <option value="sharp">Остриё (гвоздь)</option>
+                </select>
+            </div>
+            <button class="btn btn-primary" id="applyPressure">📐 Рассчитать</button>
+            <button class="btn btn-secondary" id="resetPressure">↺ Сброс</button>
+            <div class="results-panel">
+                <h4>Результаты</h4>
+                <div class="result-item"><span class="r-label">Сила (F):</span><span class="r-value" id="forceResult">—</span></div>
+                <div class="result-item"><span class="r-label">Площадь (S):</span><span class="r-value" id="areaResult">—</span></div>
+                <div class="result-item"><span class="r-label">Давление (p):</span><span class="r-value" id="pressureResult">—</span></div>
+                <div class="result-item"><span class="r-label">Деформация:</span><span class="r-value" id="deformResult">—</span></div>
+            </div>
+            <div class="info-box">
+                <strong>💡 Пример:</strong> Лыжник не проваливается в снег, потому что его вес распределён по большой площади. Тот же человек без лыж создаёт давление в 20 раз больше!
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 5. ARCHIMEDES -->
+<div class="experiment-container" id="exp-archimedes">
+    <div class="exp-header">
+        <h2>🚢 Закон Архимеда</h2>
+        <div class="formula">F_A = ρ_ж · g · V_погр &nbsp;&nbsp;|&nbsp;&nbsp; F_A — выталкивающая сила</div>
+        <div class="description">Исследуйте выталкивающую силу. Поместите тело разной формы и объёма в жидкость и наблюдайте за действием силы Архимеда.</div>
+    </div>
+    <div class="sim-layout">
+        <div class="canvas-wrapper">
+            <canvas id="canvasArchimedes" width="700" height="400"></canvas>
+            <div class="legend">
+                <div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div> Жидкость</div>
+                <div class="legend-item"><div class="legend-dot" style="background:#10b981"></div> F Архимеда ↑</div>
+                <div class="legend-item"><div class="legend-dot" style="background:#ef4444"></div> F тяжести ↓</div>
+            </div>
+        </div>
+        <div class="controls-panel">
+            <h3>Параметры</h3>
+            <div class="control-group">
+                <label>Объём тела <span class="value" id="archVolumeVal">0.0010</span> м³</label>
+                <input type="range" id="archVolume" min="1" max="50" value="10">
+            </div>
+            <div class="control-group">
+                <label>Масса тела <span class="value" id="archMassVal">0.5</span> кг</label>
+                <input type="range" id="archMass" min="0.1" max="10" value="0.5" step="0.1">
+            </div>
+            <div class="control-group">
+                <label>Плотность жидкости:</label>
+                <select id="archFluidSelect">
+                    <option value="800">Керосин (800 кг/м³)</option>
+                    <option value="1000" selected>Вода (1000 кг/м³)</option>
+                    <option value="1030">Морская вода (1030 кг/м³)</option>
+                    <option value="13600">Ртуть (13600 кг/м³)</option>
+                </select>
+            </div>
+            <button class="btn btn-primary" id="dipArchimedes">💧 Опустить в жидкость</button>
+            <button class="btn btn-secondary" id="resetArchimedes">↺ Сброс</button>
+            <div class="results-panel">
+                <h4>Результаты</h4>
+                <div class="result-item"><span class="r-label">F Архимеда:</span><span class="r-value" id="archResultFA">—</span></div>
+                <div class="result-item"><span class="r-label">F тяжести:</span><span class="r-value" id="archResultFG">—</span></div>
+                <div class="result-item"><span class="r-label">Результат:</span><span class="r-value" id="archResultState">—</span></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 6. MOLECULES -->
+<div class="experiment-container" id="exp-molecules">
+    <div class="exp-header">
+        <h2>🔬 Молекулярное строение вещества</h2>
+        <div class="formula">E_кин = (3/2) · k · T &nbsp;&nbsp;|&nbsp;&nbsp; Диффузия</div>
+        <div class="description">Наблюдайте за движением молекул в газе, жидкости и твёрдом теле. Изменяйте температуру и наблюдайте, как меняется скорость частиц и явление диффузии.</div>
+    </div>
+    <div class="sim-layout">
+        <div class="canvas-wrapper">
+            <canvas id="canvasMolecules" width="700" height="400"></canvas>
+            <div class="legend">
+                <div class="legend-item"><div class="legend-dot" style="background:#60a5fa"></div> Молекулы A</div>
+                <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div> Молекулы B (диффузия)</div>
+            </div>
+        </div>
+        <div class="controls-panel">
+            <h3>Параметры</h3>
+            <div class="control-group">
+                <label>Температура <span class="value" id="tempVal">300</span> К</label>
+                <input type="range" id="temperature" min="50" max="1000" value="300">
+            </div>
+            <div class="control-group">
+                <label>Агрегатное состояние:</label>
+                <select id="stateSelect">
+                    <option value="solid">Твёрдое тело</option>
+                    <option value="liquid" selected>Жидкость</option>
+                    <option value="gas">Газ</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label>Количество молекул <span class="value" id="molCountVal">60</span></label>
+                <input type="range" id="molCount" min="20" max="150" value="60">
+            </div>
+            <label class="checkbox-group"><input type="checkbox" id="showDiffusion"> Показать диффузию</label>
+            <label class="checkbox-group"><input type="checkbox" id="showVectors"> Показать векторы скорости</label>
+            <button class="btn btn-primary" id="startMolecules">▶ Запустить</button>
+            <button class="btn btn-secondary" id="resetMolecules">↺ Сброс</button>
+            <div class="results-panel">
+                <h4>Результаты</h4>
+                <div class="result-item"><span class="r-label">Средняя скорость:</span><span class="r-value" id="avgSpeed">—</span></div>
+                <div class="result-item"><span class="r-label">Число молекул:</span><span class="r-value" id="numMolecules">—</span></div>
+                <div class="result-item"><span class="r-label">Энергия (отн.):</span><span class="r-value" id="relEnergy">—</span></div>
+            </div>
+            <div class="info-box">
+                <strong>💡 Диффузия</strong> — явление взаимного проникновения молекул одного вещества между молекулами другого. С повышением температуры диффузия ускоряется.
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 7. LEVER -->
+<div class="experiment-container" id="exp-lever">
+    <div class="exp-header">
+        <h2>⚖️ Рычаг. Правило моментов</h2>
+        <div class="formula">F₁ · l₁ = F₂ · l₂ &nbsp;&nbsp;|&nbsp;&nbsp; M = F · l</div>
+        <div class="description">Исследуйте условие равновесия рычага. Размещайте грузы на разных плечах и добейтесь равновесия.</div>
+    </div>
+    <div class="sim-layout">
+        <div class="canvas-wrapper">
+            <canvas id="canvasLever" width="700" height="400"></canvas>
+        </div>
+        <div class="controls-panel">
+            <h3>Параметры</h3>
+            <div class="control-group">
+                <label>Груз слева (кг) <span class="value" id="leverMassLVal">2</span></label>
+                <input type="range" id="leverMassL" min="0" max="10" value="2" step="0.5">
+            </div>
+            <div class="control-group">
+                <label>Плечо слева (м) <span class="value" id="leverDistLVal">3</span></label>
+                <input type="range" id="leverDistL" min="1" max="5" value="3">
+            </div>
+            <div class="control-group">
+                <label>Груз справа (кг) <span class="value" id="leverMassRVal">3</span></label>
+                <input type="range" id="leverMassR" min="0" max="10" value="3" step="0.5">
+            </div>
+            <div class="control-group">
+                <label>Плечо справа (м) <span class="value" id="leverDistRVal">2</span></label>
+                <input type="range" id="leverDistR" min="1" max="5" value="2">
+            </div>
+            <button class="btn btn-secondary" id="resetLever">↺ Сброс</button>
+            <div class="results-panel">
+                <h4>Результаты</h4>
+                <div class="result-item"><span class="r-label">M левый:</span><span class="r-value" id="momentL">—</span></div>
+                <div class="result-item"><span class="r-label">M правый:</span><span class="r-value" id="momentR">—</span></div>
+                <div class="result-item"><span class="r-label">Состояние:</span><span class="r-value" id="leverState">—</span></div>
+                <div class="result-item"><span class="r-label">Выигрыш в силе:</span><span class="r-value" id="leverAdvantage">—</span></div>
+            </div>
+            <div class="info-box">
+                <strong>💡 Золотое правило механики:</strong> Ни один механизм не даёт выигрыша в работе. Выигрывая в силе, проигрываем в расстоянии.
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 8. WORK -->
+<div class="experiment-container" id="exp-work">
+    <div class="exp-header">
+        <h2>💪 Механическая работа и мощность</h2>
+        <div class="formula">A = F · S &nbsp;&nbsp;|&nbsp;&nbsp; N = A / t &nbsp;&nbsp;|&nbsp;&nbsp; [A] = Дж, [N] = Вт</div>
+        <div class="description">Исследуйте механическую работу и мощность. Перемещайте груз с разной силой на разное расстояние.</div>
+    </div>
+    <div class="sim-layout">
+        <div class="canvas-wrapper">
+            <canvas id="canvasWork" width="700" height="400"></canvas>
+            <div class="legend">
+                <div class="legend-item"><div class="legend-dot" style="background:#10b981"></div> Направление силы</div>
+                <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div> Перемещение</div>
+            </div>
+        </div>
+        <div class="controls-panel">
+            <h3>Параметры</h3>
+            <div class="control-group">
+                <label>Сила <span class="value" id="workForceVal">50</span> Н</label>
+                <input type="range" id="workForce" min="10" max="200" value="50">
+            </div>
+            <div class="control-group">
+                <label>Перемещение <span class="value" id="workDistVal">10</span> м</label>
+                <input type="range" id="workDist" min="1" max="50" value="10">
+            </div>
+            <div class="control-group">
+                <label>Время <span class="value" id="workTimeVal">5</span> с</label>
+                <input type="range" id="workTime" min="1" max="20" value="5">
+            </div>
+            <div class="control-group">
+                <label>Угол силы <span class="value" id="workAngleVal">0</span>°</label>
+                <input type="range" id="workAngle" min="0" max="90" value="0">
+            </div>
+            <button class="btn btn-primary" id="startWork">▶ Выполнить работу</button>
+            <button class="btn btn-secondary" id="resetWork">↺ Сброс</button>
+            <div class="results-panel">
+                <h4>Результаты</h4>
+                <div class="result-item"><span class="r-label">Работа (A):</span><span class="r-value" id="workResult">—</span></div>
+                <div class="result-item"><span class="r-label">Мощность (N):</span><span class="r-value" id="powerResult">—</span></div>
+                <div class="result-item"><span class="r-label">cos α:</span><span class="r-value" id="cosAngle">—</span></div>
+            </div>
+            <div class="info-box">
+                <strong>💡 Запомните:</strong> 1 Дж — работа силы 1 Н на пути 1 м. 1 Вт = 1 Дж/с. Если сила направлена под углом, A = F·S·cos α.
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// ==================== NAVIGATION ====================
+const tabs = document.querySelectorAll('.nav-tab');
+const containers = document.querySelectorAll('.experiment-container');
+
+tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        containers.forEach(c => c.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById('exp-' + tab.dataset.tab).classList.add('active');
+    });
+});
+
+// ==================== UTILITY ====================
+function lerp(a, b, t) { return a + (b - a) * t; }
+function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
+
+// ==================== 1. MOTION SIMULATION ====================
+(function() {
+    const canvas = document.getElementById('canvasMotion');
+    const ctx = canvas.getContext('2d');
+    let running = false;
+    let time = 0;
+    let animFrame;
+
+    const v1Slider = document.getElementById('v1');
+    const v2Slider = document.getElementById('v2');
+    const distSlider = document.getElementById('dist');
+
+    function updateLabels() {
+        document.getElementById('v1Val').textContent = v1Slider.value;
+        document.getElementById('v2Val').textContent = v2Slider.value;
+        document.getElementById('distVal').textContent = distSlider.value;
     }
-    window.addEventListener('resize',resize); resize();
+    v1Slider.oninput = v2Slider.oninput = distSlider.oninput = updateLabels;
 
-    /* Цвета жидкостей */
-    const LC=[
-        {d:700,r:200,g:170,b:40},{d:920,r:190,g:160,b:35},
-        {d:1000,r:40,g:130,b:210},{d:1030,r:35,g:118,b:195},
-        {d:1260,r:70,g:170,b:120},{d:5000,r:110,g:125,b:145},
-        {d:13600,r:160,g:170,b:185},
-    ];
-    function liqRGB(d){
-        let i=0;
-        for(let j=0;j<LC.length-1;j++){if(d>=LC[j].d&&d<=LC[j+1].d){i=j;break;}if(j===LC.length-2)i=j;}
-        const a=LC[i],b=LC[i+1],t=Math.max(0,Math.min(1,(d-a.d)/Math.max(1,b.d-a.d)));
-        return{r:Math.round(a.r+(b.r-a.r)*t),g:Math.round(a.g+(b.g-a.g)*t),b:Math.round(a.b+(b.b-a.b)*t)};
-    }
+    function draw() {
+        const W = canvas.width, H = canvas.height;
+        ctx.clearRect(0, 0, W, H);
 
-    /* Цвета материалов */
-    const MC=[
-        {d:600,r:175,g:140,b:75,n:'Пробка'},{d:900,r:155,g:110,b:50,n:'Дерево'},
-        {d:2700,r:175,g:180,b:195,n:'Алюминий'},{d:7800,r:110,g:113,b:125,n:'Железо'},
-        {d:11340,r:72,g:74,b:85,n:'Свинец'},
-    ];
-    function matOf(d){let best=MC[0],md=1e9;for(const m of MC){const dd=Math.abs(m.d-d);if(dd<md){md=dd;best=m;}}return best;}
+        const dist = parseInt(distSlider.value);
+        const v1 = parseInt(v1Slider.value);
+        const v2 = parseInt(v2Slider.value);
+        const finishX = 620;
+        const startX = 60;
+        const range = finishX - startX;
 
-    function lerp(a,b,t){return a+(b-a)*t;}
-    function clamp(v,lo,hi){return Math.max(lo,Math.min(hi,v));}
-    function fmt(n,d){return n.toFixed(d===undefined?2:d);}
+        ctx.strokeStyle = 'rgba(100,140,255,0.06)';
+        ctx.lineWidth = 1;
+        for (let i = 0; i < W; i += 40) { ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, H); ctx.stroke(); }
+        for (let i = 0; i < H; i += 40) { ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(W, i); ctx.stroke(); }
 
-    function bodyRect(){
-        const sub=cSub/100;
-        let top=TK.surfY-(1-sub)*BD.h;
-        top=clamp(top, TK.y+TK.wall+3, TK.y+TK.h-TK.wall-BD.h-3);
-        return{x:W/2-BD.w/2, y:top, w:BD.w, h:BD.h, cx:W/2, cy:top+BD.h/2};
-    }
+        const y1 = 100, y2 = 230, trackH = 50;
 
-    /* ========== РИСОВАНИЕ ========== */
-    function drawBg(){
-        const g=ctx.createRadialGradient(W/2,H/2,40,W/2,H/2,W*0.72);
-        g.addColorStop(0,'#f5f7fa');
-        g.addColorStop(1,'#e6eaf0');
-        ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
-        ctx.strokeStyle='rgba(0,0,0,0.04)'; ctx.lineWidth=0.5;
-        for(let x=0;x<W;x+=30){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
-        for(let y=0;y<H;y+=30){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
-    }
+        ctx.fillStyle = '#1a2040';
+        ctx.fillRect(startX - 10, y1 - 5, range + 20, trackH + 10);
+        ctx.fillRect(startX - 10, y2 - 5, range + 20, trackH + 10);
 
-    function drawTank(){
-        const{x,y,w,h,wall}=TK;
-        /* Внутренность */
-        ctx.fillStyle='#cdd5df';
-        ctx.fillRect(x+wall, y+wall, w-wall*2, h-wall);
-        /* Стенки */
-        ctx.strokeStyle='#4a5e74'; ctx.lineWidth=wall; ctx.lineCap='round';
-        ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x,y+h);ctx.stroke();
-        ctx.beginPath();ctx.moveTo(x+w,y);ctx.lineTo(x+w,y+h);ctx.stroke();
-        ctx.beginPath();ctx.moveTo(x-3,y+h);ctx.lineTo(x+w+3,y+h);ctx.stroke();
-        /* Блик на левом стекле */
-        ctx.strokeStyle='rgba(255,255,255,0.55)'; ctx.lineWidth=2;
-        ctx.beginPath();ctx.moveTo(x+wall+2,y+12);ctx.lineTo(x+wall+2,y+h-12);ctx.stroke();
-        /* Шкала */
-        ctx.fillStyle='rgba(0,0,0,0.18)';
-        ctx.font='500 13px JetBrains Mono'; ctx.textAlign='right';
-        const bot=y+h-wall;
-        for(let yy=TK.surfY; yy<bot; yy+=60){
-            const cm=((yy-TK.surfY)/(bot-TK.surfY)*50).toFixed(0);
-            ctx.fillRect(x+wall, yy, 10, 0.8);
-            ctx.fillText(cm+' см', x+wall-5, yy+5);
-        }
-    }
+        ctx.fillStyle = '#10b981';
+        ctx.fillRect(finishX - 2, y1 - 15, 4, trackH + 30);
+        ctx.font = '11px Inter';
+        ctx.fillText('ФИНИШ ' + dist + ' м', finishX - 35, y1 - 20);
 
-    function drawLiquid(){
-        const{x,y,w,h,wall,surfY}=TK;
-        const lx=x+wall, lw=w-wall*2, bot=y+h-wall/2;
-        const c=liqRGB(cRhoL);
-        ctx.save();
-        ctx.beginPath();
-        ctx.moveTo(lx,bot); ctx.lineTo(lx,surfY);
-        for(let px=lx;px<=lx+lw;px++){
-            const rx=(px-lx)/lw;
-            const wv=Math.sin(rx*Math.PI*4+time*2)*4+Math.sin(rx*Math.PI*7-time*1.4)*2;
-            ctx.lineTo(px, surfY+wv);
-        }
-        ctx.lineTo(lx+lw,bot); ctx.closePath();
-        const gr=ctx.createLinearGradient(0,surfY,0,bot);
-        gr.addColorStop(0,`rgba(${c.r},${c.g},${c.b},0.55)`);
-        gr.addColorStop(0.6,`rgba(${c.r},${c.g},${c.b},0.7)`);
-        gr.addColorStop(1,`rgba(${Math.max(0,c.r-20)},${Math.max(0,c.g-20)},${Math.max(0,c.b-20)},0.82)`);
-        ctx.fillStyle=gr; ctx.fill();
-        /* Линия поверхности */
-        ctx.strokeStyle=`rgba(${Math.max(0,c.r-45)},${Math.max(0,c.g-45)},${Math.max(0,c.b-45)},0.55)`;
-        ctx.lineWidth=2.5;
-        ctx.beginPath(); let first=true;
-        for(let px=lx+8;px<=lx+lw-8;px++){
-            const rx=(px-lx)/lw;
-            const wv=Math.sin(rx*Math.PI*4+time*2)*4+Math.sin(rx*Math.PI*7-time*1.4)*2;
-            if(first){ctx.moveTo(px,surfY+wv);first=false;}else ctx.lineTo(px,surfY+wv);
-        }
-        ctx.stroke();
-        ctx.restore();
-        /* Подпись плотности */
-        ctx.fillStyle=`rgba(${Math.max(0,c.r-50)},${Math.max(0,c.g-50)},${Math.max(0,c.b-50)},0.6)`;
-        ctx.font='700 17px Rubik'; ctx.textAlign='right';
-        ctx.fillText('ρ = '+Math.round(cRhoL)+' кг/м³', x+w-wall-14, surfY+34);
-    }
-
-    function drawBody(){
-        const p=bodyRect(), m=matOf(cRhoB);
-        ctx.save();
-        ctx.shadowColor='rgba(0,0,0,0.2)'; ctx.shadowBlur=16;
-        ctx.shadowOffsetX=3; ctx.shadowOffsetY=5;
-        const bg=ctx.createLinearGradient(p.x,p.y,p.x+p.w,p.y+p.h);
-        bg.addColorStop(0,`rgba(${Math.min(255,m.r+45)},${Math.min(255,m.g+45)},${Math.min(255,m.b+45)},1)`);
-        bg.addColorStop(0.5,`rgba(${m.r},${m.g},${m.b},1)`);
-        bg.addColorStop(1,`rgba(${Math.max(0,m.r-28)},${Math.max(0,m.g-28)},${Math.max(0,m.b-28)},1)`);
-        ctx.fillStyle=bg;
-        ctx.beginPath(); ctx.roundRect(p.x,p.y,p.w,p.h,10); ctx.fill();
-        ctx.shadowColor='transparent';
-        /* Блик */
-        const hl=ctx.createLinearGradient(p.x,p.y,p.x,p.y+p.h*0.38);
-        hl.addColorStop(0,'rgba(255,255,255,0.48)');
-        hl.addColorStop(1,'rgba(255,255,255,0)');
-        ctx.fillStyle=hl;
-        ctx.beginPath(); ctx.roundRect(p.x+5,p.y+5,p.w-10,p.h*0.34,6); ctx.fill();
-        /* Обводка */
-        ctx.strokeStyle=`rgba(${Math.max(0,m.r-30)},${Math.max(0,m.g-30)},${Math.max(0,m.b-30)},0.35)`;
-        ctx.lineWidth=2.5;
-        ctx.beginPath(); ctx.roundRect(p.x,p.y,p.w,p.h,10); ctx.stroke();
-        /* Текст — УВЕЛИЧЕН */
-        ctx.fillStyle='rgba(255,255,255,0.95)';
-        ctx.font='800 22px Rubik'; ctx.textAlign='center'; ctx.textBaseline='middle';
-        ctx.fillText(m.n, p.cx, p.cy-14);
-        ctx.font='600 16px JetBrains Mono'; ctx.fillStyle='rgba(255,255,255,0.72)';
-        ctx.fillText('ρ = '+Math.round(cRhoB), p.cx, p.cy+16);
-        ctx.restore();
-    }
-
-    function drawArrow(x1,y1,x2,y2,color){
-        const hl=16, dx=x2-x1, dy=y2-y1, a=Math.atan2(dy,dx);
-        ctx.save();
-        ctx.shadowColor='rgba(0,0,0,0.14)'; ctx.shadowBlur=5;
-        ctx.strokeStyle=color; ctx.lineWidth=6; ctx.lineCap='round';
-        ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
-        ctx.fillStyle=color; ctx.beginPath();
-        ctx.moveTo(x2,y2);
-        ctx.lineTo(x2-hl*Math.cos(a-Math.PI/6), y2-hl*Math.sin(a-Math.PI/6));
-        ctx.lineTo(x2-hl*Math.cos(a+Math.PI/6), y2-hl*Math.sin(a+Math.PI/6));
-        ctx.closePath(); ctx.fill();
-        ctx.restore();
-    }
-
-    function drawForces(d){
-        const p=bodyRect();
-        const maxF=Math.max(d.Fa,d.Fg,0.1)*1.25, maxL=160;
-        const aL=Math.max(18,(d.Fa/maxF)*maxL);
-        const gL=Math.max(18,(d.Fg/maxF)*maxL);
-        const ax=p.cx-55, gx=p.cx+55;
-        drawArrow(ax,p.cy, ax,p.cy-aL, '#009e6f');
-        drawArrow(gx,p.cy, gx,p.cy+gL, '#d63a2a');
-
-        ctx.font='700 18px JetBrains Mono'; ctx.textBaseline='middle';
-        const faTxt='Fвыт = '+fmt(d.Fa)+' Н';
-        const fgTxt='Fтяж = '+fmt(d.Fg)+' Н';
-        /* Подложки */
-        ctx.textAlign='right';
-        const faM=ctx.measureText(faTxt);
-        roundRectFill(ctx, ax-faM.width-14, p.cy-aL-22, faM.width+18, 28, 6, 'rgba(255,255,255,0.85)');
-        ctx.fillStyle='#009e6f';
-        ctx.fillText(faTxt, ax-6, p.cy-aL-8);
-
-        ctx.textAlign='left';
-        const fgM=ctx.measureText(fgTxt);
-        roundRectFill(ctx, gx-6, p.cy+gL+3, fgM.width+18, 28, 6, 'rgba(255,255,255,0.85)');
-        ctx.fillStyle='#d63a2a';
-        ctx.fillText(fgTxt, gx+4, p.cy+gL+17);
-    }
-
-    /* Вспомогательная: закрашенный скруглённый прямоугольник */
-    function roundRectFill(c, x, y, w, h, r, fill){
-        c.fillStyle=fill;
-        c.beginPath(); c.roundRect(x,y,w,h,r); c.fill();
-    }
-
-    function drawLevel(){
-        const p=bodyRect();
-        ctx.setLineDash([6,6]);
-        ctx.strokeStyle='rgba(0,0,0,0.18)'; ctx.lineWidth=1.5;
-        ctx.beginPath(); ctx.moveTo(TK.x+TK.wall+12,TK.surfY); ctx.lineTo(p.x-12,TK.surfY); ctx.stroke();
-        ctx.beginPath(); ctx.moveTo(p.x+p.w+12,TK.surfY); ctx.lineTo(TK.x+TK.w-TK.wall-12,TK.surfY); ctx.stroke();
+        ctx.setLineDash([15, 15]);
+        ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+        ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(startX, y1 + trackH / 2); ctx.lineTo(finishX, y1 + trackH / 2); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(startX, y2 + trackH / 2); ctx.lineTo(finishX, y2 + trackH / 2); ctx.stroke();
         ctx.setLineDash([]);
-        ctx.fillStyle='rgba(0,0,0,0.4)';
-        ctx.font='600 16px Rubik'; ctx.textAlign='right';
-        ctx.fillText('поверхность', TK.x+TK.w-TK.wall-16, TK.surfY-10);
-    }
 
-    function drawBrackets(){
-        const p=bodyRect(), sub=cSub/100;
-        if(sub<0.04||sub>0.96) return;
-        const bt=TK.surfY, bb=p.y+p.h;
-        if(bb-bt>18){
-            const bx=p.x-22;
-            ctx.strokeStyle='rgba(0,158,111,0.5)'; ctx.lineWidth=2;
-            ctx.beginPath(); ctx.moveTo(bx,bt); ctx.lineTo(bx-8,bt); ctx.lineTo(bx-8,bb); ctx.lineTo(bx,bb); ctx.stroke();
-            ctx.fillStyle='rgba(0,158,111,0.8)';
-            ctx.font='700 17px JetBrains Mono'; ctx.textAlign='right';
-            ctx.fillText(Math.round(sub*100)+'%', bx-14, (bt+bb)/2+6);
-        }
-        const at=p.y, ab=TK.surfY;
-        if(ab-at>18){
-            const bx=p.x+p.w+22;
-            ctx.strokeStyle='rgba(0,0,0,0.22)'; ctx.lineWidth=2;
-            ctx.beginPath(); ctx.moveTo(bx,at); ctx.lineTo(bx+8,at); ctx.lineTo(bx+8,ab); ctx.lineTo(bx,ab); ctx.stroke();
-            ctx.fillStyle='rgba(0,0,0,0.5)';
-            ctx.font='700 17px JetBrains Mono'; ctx.textAlign='left';
-            ctx.fillText(Math.round((1-sub)*100)+'%', bx+14, (at+ab)/2+6);
-        }
-    }
+        const t1Finish = dist / v1;
+        const t2Finish = dist / v2;
+        const pos1 = clamp((time / t1Finish) * range, 0, range);
+        const pos2 = clamp((time / t2Finish) * range, 0, range);
 
-    /* Пузырьки — тоже крупнее */
-    let bubs=[], lastBub=0;
-    function spawnBubs(){
-        if(cSub<8) return;
-        const p=bodyRect(), wTop=Math.max(TK.surfY,p.y);
-        if(p.y+p.h-wTop<12) return;
-        bubs.push({x:p.x+14+Math.random()*(p.w-28), y:wTop+Math.random()*(p.y+p.h-wTop), r:2+Math.random()*4.5, vx:(Math.random()-0.5)*0.35, vy:-0.6-Math.random()*1.5, life:1});
-    }
-    function tickBubs(){
-        for(let i=bubs.length-1;i>=0;i--){
-            const b=bubs[i]; b.x+=b.vx; b.y+=b.vy; b.life-=0.01;
-            if(b.life<=0||b.y<TK.surfY-6) bubs.splice(i,1);
+        ctx.fillStyle = 'rgba(59,130,246,0.15)'; ctx.fillRect(startX, y1 - 2, pos1, trackH + 4);
+        ctx.fillStyle = 'rgba(245,158,11,0.15)'; ctx.fillRect(startX, y2 - 2, pos2, trackH + 4);
+
+        drawCar(ctx, startX + pos1, y1 + trackH / 2, '#3b82f6', '#1d4ed8', v1);
+        drawCar(ctx, startX + pos2, y2 + trackH / 2, '#f59e0b', '#d97706', v2);
+
+        ctx.font = 'bold 13px Inter';
+        ctx.fillStyle = '#3b82f6'; ctx.fillText('v₁ = ' + v1 + ' м/с', startX, y1 - 15);
+        ctx.fillStyle = '#f59e0b'; ctx.fillText('v₂ = ' + v2 + ' м/с', startX, y2 - 15);
+
+        ctx.fillStyle = '#e0e6f0'; ctx.font = 'bold 16px Courier New'; ctx.fillText('t = ' + time.toFixed(1) + ' с', 30, 30);
+
+        if (running) {
+            time += 0.033;
+            if (time >= Math.max(t1Finish, t2Finish)) running = false;
+            animFrame = requestAnimationFrame(draw);
         }
-    }
-    function drawBubs(){
-        for(const b of bubs){
-            ctx.beginPath(); ctx.arc(b.x,b.y,Math.max(0.5,b.r),0,Math.PI*2);
-            ctx.fillStyle=`rgba(255,255,255,${(b.life*0.6).toFixed(2)})`; ctx.fill();
-            ctx.strokeStyle=`rgba(0,0,0,${(b.life*0.1).toFixed(2)})`; ctx.lineWidth=0.6; ctx.stroke();
-            /* блик */
-            ctx.beginPath(); ctx.arc(b.x-b.r*0.25, b.y-b.r*0.3, Math.max(0.3,b.r*0.3), 0, Math.PI*2);
-            ctx.fillStyle=`rgba(255,255,255,${(b.life*0.5).toFixed(2)})`; ctx.fill();
+
+        if (time > 0) {
+            document.getElementById('currentTime').textContent = time.toFixed(1) + ' с';
+            if (time >= t1Finish) document.getElementById('t1Result').textContent = t1Finish.toFixed(2) + ' с ✓';
+            if (time >= t2Finish) document.getElementById('t2Result').textContent = t2Finish.toFixed(2) + ' с ✓';
         }
     }
 
-    /* ========== ПОЛЗУНКИ ========== */
-    document.getElementById('sRhoL').addEventListener('input',function(){
-        tRhoL=parseFloat(this.value);
-        document.getElementById('vRhoL').textContent=Math.round(tRhoL);
-        document.querySelectorAll('.sel-btn:not(.rd)').forEach(b=>b.classList.toggle('on',parseInt(b.dataset.d)===Math.round(tRhoL)));
-    });
-    document.getElementById('sSub').addEventListener('input',function(){
-        tSub=parseFloat(this.value);
-        document.getElementById('vSub').textContent=Math.round(tSub)+'%';
-    });
-    document.getElementById('sRhoB').addEventListener('input',function(){
-        tRhoB=parseFloat(this.value);
-        document.getElementById('vRhoB').textContent=Math.round(tRhoB);
-        document.querySelectorAll('.sel-btn.rd').forEach(b=>b.classList.toggle('on',parseInt(b.dataset.d)===Math.round(tRhoB)));
-    });
-    document.getElementById('sVol').addEventListener('input',function(){
-        tVol=parseFloat(this.value);
-        document.getElementById('vVol').textContent=fmt(tVol/1000,2)+' л';
-    });
-
-    function pickLiq(btn){
-        tRhoL=parseInt(btn.dataset.d);
-        document.getElementById('sRhoL').value=tRhoL;
-        document.getElementById('vRhoL').textContent=tRhoL;
-        document.querySelectorAll('.sel-btn:not(.rd)').forEach(b=>b.classList.remove('on'));
-        btn.classList.add('on');
-    }
-    function pickMat(btn){
-        tRhoB=parseInt(btn.dataset.d);
-        document.getElementById('sRhoB').value=tRhoB;
-        document.getElementById('vRhoB').textContent=tRhoB;
-        document.querySelectorAll('.sel-btn.rd').forEach(b=>b.classList.remove('on'));
-        btn.classList.add('on');
+    function drawCar(ctx, x, y, color, darkColor, speed) {
+        const s = speed / 50;
+        const w = 40 + s * 15, h = 22;
+        ctx.fillStyle = color; ctx.beginPath(); ctx.roundRect(x - w / 2, y - h / 2 - 6, w, h - 4, 5); ctx.fill();
+        ctx.fillStyle = darkColor; ctx.beginPath(); ctx.roundRect(x - w / 4, y - h / 2 - 14, w / 2, 10, 4); ctx.fill();
+        ctx.fillStyle = '#1a2040';
+        ctx.beginPath(); ctx.arc(x - w / 3, y + 2, 6, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(x + w / 3, y + 2, 6, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = '#4a5070'; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.arc(x - w / 3, y + 2, 3, 0, Math.PI * 2); ctx.stroke();
+        ctx.beginPath(); ctx.arc(x + w / 3, y + 2, 3, 0, Math.PI * 2); ctx.stroke();
     }
 
-    /* ========== ПЕРЕТАСКИВАНИЕ ========== */
-    function getCY(clientY){const r=cvs.getBoundingClientRect();return(clientY-r.top)/r.height*H;}
-    function hitBody(cy){const p=bodyRect();return cy>=p.y-30&&cy<=p.y+p.h+30;}
-    function yToSub(cy){const bodyTop=cy-dragOff; const sub=(bodyTop+BD.h-TK.surfY)/BD.h; return clamp(Math.round(sub*100),0,100);}
+    document.getElementById('startMotion').onclick = () => {
+        running = true; time = 0;
+        document.getElementById('t1Result').textContent = '—';
+        document.getElementById('t2Result').textContent = '—';
+        cancelAnimationFrame(animFrame); draw();
+    };
+    document.getElementById('resetMotion').onclick = () => {
+        running = false; cancelAnimationFrame(animFrame); time = 0;
+        document.getElementById('t1Result').textContent = '—';
+        document.getElementById('t2Result').textContent = '—';
+        document.getElementById('currentTime').textContent = '0.0 с'; draw();
+    };
+    draw();
+})();
 
-    cvs.addEventListener('mousedown',function(e){const cy=getCY(e.clientY);if(hitBody(cy)){dragging=true;dragOff=cy-bodyRect().y;hideHint();}});
-    window.addEventListener('mousemove',function(e){if(!dragging)return;const s=yToSub(getCY(e.clientY));tSub=s;document.getElementById('sSub').value=s;document.getElementById('vSub').textContent=s+'%';});
-    window.addEventListener('mouseup',function(){dragging=false;});
-    cvs.addEventListener('touchstart',function(e){e.preventDefault();const t=e.touches[0],cy=getCY(t.clientY);if(hitBody(cy)){dragging=true;dragOff=cy-bodyRect().y;hideHint();}},{passive:false});
-    cvs.addEventListener('touchmove',function(e){e.preventDefault();if(!dragging)return;const t=e.touches[0],s=yToSub(getCY(t.clientY));tSub=s;document.getElementById('sSub').value=s;document.getElementById('vSub').textContent=s+'%';},{passive:false});
-    cvs.addEventListener('touchend',function(){dragging=false;});
+// ==================== 2. DENSITY SIMULATION ====================
+(function() {
+    const canvas = document.getElementById('canvasDensity');
+    const ctx = canvas.getContext('2d');
+    let objY = 50, objVel = 0, animating = false, animFrame;
 
-    function hideHint(){
-        if(!hintShown)return; hintShown=false;
-        const h=document.getElementById('dragHint');
-        h.style.transition='opacity 0.5s'; h.style.opacity='0';
-        setTimeout(()=>h.style.display='none',500);
+    const bodyDensitySlider = document.getElementById('bodyDensity');
+    const fluidDensitySlider = document.getElementById('fluidDensity');
+    const bodyMassSlider = document.getElementById('bodyMass');
+
+    function updateLabels() {
+        document.getElementById('bodyDensityVal').textContent = bodyDensitySlider.value;
+        document.getElementById('fluidDensityVal').textContent = fluidDensitySlider.value;
+        document.getElementById('bodyMassVal').textContent = parseFloat(bodyMassSlider.value).toFixed(1);
     }
+    bodyDensitySlider.oninput = fluidDensitySlider.oninput = bodyMassSlider.oninput = updateLabels;
 
-    /* ========== UI ========== */
-    function updateUI(d){
-        document.getElementById('vFa').textContent=fmt(d.Fa);
-        document.getElementById('vFg').textContent=fmt(d.Fg);
-        const absN=Math.abs(d.Fn);
-        document.getElementById('vFn').textContent=fmt(absN);
-        if(absN<0.08&&cSub>1){
-            document.getElementById('vFn').style.color='var(--accent)';
-            document.getElementById('vFnDir').textContent='Н (равновесие)';
-        }else if(d.Fn>0){
-            document.getElementById('vFn').style.color='var(--accent)';
-            document.getElementById('vFnDir').textContent='Н вверх';
-        }else{
-            document.getElementById('vFn').style.color='var(--yellow)';
-            document.getElementById('vFnDir').textContent='Н вниз';
+    document.getElementById('materialSelect').onchange = function() {
+        bodyDensitySlider.value = this.value; updateLabels();
+    };
+
+    function draw() {
+        const W = canvas.width, H = canvas.height;
+        ctx.clearRect(0, 0, W, H);
+
+        const bodyDensity = parseFloat(bodyDensitySlider.value);
+        const fluidDensity = parseFloat(fluidDensitySlider.value);
+        const mass = parseFloat(bodyMassSlider.value);
+        
+        // ИСПРАВЛЕНИЕ 1: Корректный расчет объема (без деления на 1000)
+        const volume = mass / bodyDensity;
+        const g = 9.8;
+        const Fg = mass * g;
+        const FA = fluidDensity * g * volume;
+
+        const waterLevel = 180, waterBottom = 360;
+
+        const gradient = ctx.createLinearGradient(0, waterLevel, 0, waterBottom);
+        gradient.addColorStop(0, 'rgba(59,130,246,0.15)'); gradient.addColorStop(1, 'rgba(59,130,246,0.4)');
+        ctx.fillStyle = gradient; ctx.fillRect(80, waterLevel, W - 160, waterBottom - waterLevel);
+
+        ctx.strokeStyle = 'rgba(96,165,250,0.5)'; ctx.lineWidth = 2; ctx.beginPath();
+        for (let x = 80; x < W - 80; x += 2) {
+            const y = waterLevel + Math.sin((x + Date.now() * 0.002) * 0.03) * 3;
+            if (x === 80) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        } ctx.stroke();
+
+        ctx.fillStyle = 'rgba(96,165,250,0.5)'; ctx.font = '12px Inter'; ctx.fillText('ρ = ' + fluidDensity + ' кг/м³', 100, waterLevel + 20);
+
+        ctx.strokeStyle = 'rgba(100,140,255,0.2)'; ctx.lineWidth = 3; ctx.beginPath();
+        ctx.moveTo(80, 60); ctx.lineTo(80, waterBottom + 20); ctx.lineTo(W - 80, waterBottom + 20); ctx.lineTo(W - 80, 60); ctx.stroke();
+
+        const objSize = 30 + mass * 8;
+        const objX = W / 2;
+
+        if (animating) {
+            const submerged = objY + objSize / 2 > waterLevel;
+            if (submerged) {
+                const submergedRatio = clamp((objY + objSize / 2 - waterLevel) / objSize, 0, 1);
+                const FA_current = FA * submergedRatio;
+                const netForce = Fg - FA_current;
+                const acc = netForce / mass;
+                objVel += acc * 0.016;
+                objVel *= 0.96;
+            } else {
+                objVel += 9.8 * 0.016;
+            }
+            objY += objVel;
+
+            if (objY + objSize / 2 > waterBottom - 5) {
+                objY = waterBottom - 5 - objSize / 2; objVel *= -0.3;
+                if (Math.abs(objVel) < 0.5) objVel = 0;
+            }
+
+            if (bodyDensity < fluidDensity) {
+                const eqY = waterLevel - objSize / 2 * (1 - bodyDensity / fluidDensity);
+                if (objY > eqY && objVel > 0) {
+                    objY = lerp(objY, eqY, 0.05);
+                    if (Math.abs(objY - eqY) < 1) objVel = 0;
+                }
+            }
         }
-        document.getElementById('vMass').textContent=fmt(d.mass)+' кг';
-        document.getElementById('vVsub').textContent=fmt(d.Vsub*1000)+' л';
-        document.getElementById('vRatio').textContent=fmt(d.rhoB/Math.max(1,d.rhoL));
 
-        const badge=document.getElementById('badge'),stxt=document.getElementById('statusTxt'),sdesc=document.getElementById('statusDesc'),dot=badge.querySelector('span:first-child');
-        if(absN<0.1&&cSub>1){
-            badge.style.background='rgba(0,158,111,0.12)';badge.style.color='var(--accent)';dot.style.background='var(--accent)';
-            stxt.textContent='Равновесие';sdesc.textContent='Силы уравновешены';
-        }else if(d.Fn>0){
-            badge.style.background='rgba(26,122,189,0.12)';badge.style.color='var(--blue)';dot.style.background='var(--blue)';
-            stxt.textContent='Всплывает';sdesc.textContent='Выталкивающая сила больше силы тяжести';
-        }else{
-            badge.style.background='rgba(214,58,42,0.1)';badge.style.color='var(--red)';dot.style.background='var(--red)';
-            stxt.textContent='Тонет';sdesc.textContent='Сила тяжести больше выталкивающей';
+        const color = bodyDensity < fluidDensity ? '#22c55e' : '#ef4444';
+        ctx.fillStyle = color; ctx.beginPath(); ctx.roundRect(objX - objSize / 2, objY - objSize / 2, objSize, objSize, 5); ctx.fill();
+        ctx.strokeStyle = 'rgba(255,255,255,0.2)'; ctx.lineWidth = 1; ctx.stroke();
+
+        ctx.fillStyle = '#e0e6f0'; ctx.font = 'bold 11px Inter'; ctx.textAlign = 'center'; ctx.fillText(mass + ' кг', objX, objY - objSize / 2 - 8);
+
+        const arrowX = objX + objSize / 2 + 30;
+        const gArrowLen = Math.min(Fg * 2, 80);
+        ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(arrowX, objY); ctx.lineTo(arrowX, objY + gArrowLen); ctx.stroke();
+        ctx.fillStyle = '#ef4444'; ctx.beginPath(); ctx.moveTo(arrowX, objY + gArrowLen + 6); ctx.lineTo(arrowX - 4, objY + gArrowLen - 2); ctx.lineTo(arrowX + 4, objY + gArrowLen - 2); ctx.fill();
+        ctx.fillText('Fт', arrowX, objY + gArrowLen + 16);
+
+        if (objY + objSize / 2 > waterLevel) {
+            const FAArrowLen = Math.min(FA * 2, 80);
+            ctx.strokeStyle = '#22c55e'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(arrowX - 25, objY); ctx.lineTo(arrowX - 25, objY - FAArrowLen); ctx.stroke();
+            ctx.fillStyle = '#22c55e'; ctx.beginPath(); ctx.moveTo(arrowX - 25, objY - FAArrowLen - 6); ctx.lineTo(arrowX - 29, objY - FAArrowLen + 2); ctx.lineTo(arrowX - 21, objY - FAArrowLen + 2); ctx.fill();
+            ctx.fillText('FA', arrowX - 25, objY - FAArrowLen - 10);
+        }
+        ctx.textAlign = 'left';
+
+        let state;
+        if (bodyDensity < fluidDensity) state = 'Плавает';
+        else if (Math.abs(bodyDensity - fluidDensity) < 50) state = 'Взвешено';
+        else state = 'Тонет';
+
+        document.getElementById('stateResult').textContent = state;
+        document.getElementById('volumeResult').textContent = volume.toFixed(6) + ' м³';
+        document.getElementById('gravityForce').textContent = Fg.toFixed(2) + ' Н';
+        document.getElementById('archForce').textContent = FA.toFixed(2) + ' Н';
+
+        animFrame = requestAnimationFrame(draw);
+    }
+
+    document.getElementById('dropObject').onclick = () => { objY = 50; objVel = 0; animating = true; };
+    document.getElementById('resetDensity').onclick = () => { animating = false; objY = 50; objVel = 0; document.getElementById('stateResult').textContent = '—'; };
+    draw();
+})();
+
+// ==================== 3. FRICTION SIMULATION ====================
+(function() {
+    const canvas = document.getElementById('canvasFriction');
+    const ctx = canvas.getContext('2d');
+    let animFrame, blockX = 150, blockVel = 0, isMoving = false;
+
+    const appliedForceSlider = document.getElementById('appliedForce');
+    const massSlider = document.getElementById('frictionMass');
+    const muSlider = document.getElementById('mu');
+
+    function updateLabels() {
+        document.getElementById('appliedForceVal').textContent = appliedForceSlider.value;
+        document.getElementById('frictionMassVal').textContent = parseFloat(massSlider.value).toFixed(1);
+        document.getElementById('muVal').textContent = parseFloat(muSlider.value).toFixed(2);
+    }
+    appliedForceSlider.oninput = massSlider.oninput = muSlider.oninput = updateLabels;
+
+    document.getElementById('surfaceSelect').onchange = function() { muSlider.value = this.value; updateLabels(); };
+
+    function draw() {
+        const W = canvas.width, H = canvas.height;
+        ctx.clearRect(0, 0, W, H);
+
+        const appliedF = parseFloat(appliedForceSlider.value);
+        const mass = parseFloat(massSlider.value);
+        const mu = parseFloat(muSlider.value);
+        const g = 9.8;
+        const N = mass * g;
+        const FfrictionMax = mu * N;
+
+        ctx.fillStyle = '#1a2040'; ctx.fillRect(50, 250, W - 100, H - 270);
+        ctx.fillStyle = 'rgba(100,140,255,0.05)';
+        for (let x = 50; x < W - 50; x += 15) { ctx.fillRect(x, 250, 8, 3); }
+        ctx.fillStyle = '#8892b0'; ctx.font = '12px Inter'; ctx.fillText('Поверхность (μ = ' + mu.toFixed(2) + ')', 70, 280);
+
+        const blockW = 60 + mass * 5, blockH = 40 + mass * 3;
+        const bx = blockX, by = 250 - blockH;
+
+        ctx.fillStyle = 'rgba(0,0,0,0.2)'; ctx.fillRect(bx + 3, by + 3, blockW, blockH);
+        const gradient = ctx.createLinearGradient(bx, by, bx, by + blockH);
+        gradient.addColorStop(0, '#3b82f6'); gradient.addColorStop(1, '#1d4ed8');
+        ctx.fillStyle = gradient; ctx.beginPath(); ctx.roundRect(bx, by, blockW, blockH, 4); ctx.fill();
+        ctx.strokeStyle = 'rgba(255,255,255,0.15)'; ctx.lineWidth = 1; ctx.stroke();
+        ctx.fillStyle = '#fff'; ctx.font = 'bold 13px Inter'; ctx.textAlign = 'center'; ctx.fillText(mass + ' кг', bx + blockW / 2, by + blockH / 2 + 4);
+
+        const arrowScale = 1.5;
+        if (appliedF > 0) {
+            const aLen = Math.min(appliedF * arrowScale, 150);
+            ctx.strokeStyle = '#f59e0b'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(bx - 30, by + blockH / 2); ctx.lineTo(bx - 30 + aLen, by + blockH / 2); ctx.stroke();
+            ctx.fillStyle = '#f59e0b'; ctx.beginPath(); ctx.moveTo(bx - 30 + aLen + 8, by + blockH / 2); ctx.lineTo(bx - 30 + aLen - 2, by + blockH / 2 - 5); ctx.lineTo(bx - 30 + aLen - 2, by + blockH / 2 + 5); ctx.fill();
+            ctx.font = '11px Inter'; ctx.fillText('F = ' + appliedF + ' Н', bx - 30 + aLen / 2, by + blockH / 2 - 12);
+        }
+
+        if (isMoving || appliedF > 0) {
+            const fLen = Math.min(FfrictionMax * arrowScale, 150);
+            ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(bx + blockW + 30, by + blockH / 2); ctx.lineTo(bx + blockW + 30 - fLen, by + blockH / 2); ctx.stroke();
+            ctx.fillStyle = '#ef4444'; ctx.beginPath(); ctx.moveTo(bx + blockW + 30 - fLen - 8, by + blockH / 2); ctx.lineTo(bx + blockW + 30 - fLen + 2, by + blockH / 2 - 5); ctx.lineTo(bx + blockW + 30 - fLen + 2, by + blockH / 2 + 5); ctx.fill();
+            ctx.font = '11px Inter'; ctx.fillText('Fтр = ' + FfrictionMax.toFixed(1) + ' Н', bx + blockW + 30 - fLen / 2, by + blockH / 2 - 12);
+        }
+
+        ctx.strokeStyle = '#a78bfa'; ctx.lineWidth = 2; const gravLen = 40; ctx.beginPath(); ctx.moveTo(bx + blockW / 2, by + blockH + 10); ctx.lineTo(bx + blockW / 2, by + blockH + 10 + gravLen); ctx.stroke();
+        ctx.fillStyle = '#a78bfa'; ctx.beginPath(); ctx.moveTo(bx + blockW / 2, by + blockH + 10 + gravLen + 6); ctx.lineTo(bx + blockW / 2 - 4, by + blockH + 10 + gravLen - 2); ctx.lineTo(bx + blockW / 2 + 4, by + blockH + 10 + gravLen - 2); ctx.fill();
+        ctx.font = '10px Inter'; ctx.fillText('mg', bx + blockW / 2 + 10, by + blockH + 10 + gravLen / 2);
+        ctx.textAlign = 'left';
+
+        // ИСПРАВЛЕНИЕ 3 и 4: Физика движения с правильной проверкой и замедлением
+        if (isMoving) {
+            const netForce = appliedF - FfrictionMax;
+            const acc = netForce / mass;
+            blockVel += acc * 0.016;
+            
+            // Если скорость упала ниже нуля (сила трения остановила тело)
+            if (blockVel < 0) {
+                blockVel = 0;
+                isMoving = false; // Тело перешло в состояние покоя
+            } else {
+                blockX += blockVel;
+                if (blockX > W - 150) {
+                    blockX = 150;
+                    blockVel = 0;
+                    isMoving = false;
+                }
+            }
+        }
+
+        const netF = appliedF - FfrictionMax;
+        const accDisplay = netF > 0 ? netF / mass : 0;
+        document.getElementById('maxFriction').textContent = FfrictionMax.toFixed(2) + ' Н';
+        document.getElementById('netForce').textContent = (netF > 0 ? netF : 0).toFixed(2) + ' Н';
+        document.getElementById('acceleration').textContent = accDisplay.toFixed(2) + ' м/с²';
+        document.getElementById('frictionVelocity').textContent = blockVel.toFixed(2) + ' м/с';
+        document.getElementById('frictionState').textContent = isMoving ? 'Движется →' : 'Покой';
+        document.getElementById('frictionState').style.color = isMoving ? '#10b981' : '#8892b0';
+
+        animFrame = requestAnimationFrame(draw);
+    }
+
+    // ИСПРАВЛЕНИЕ 3: Проверка преодоления силы трения покоя
+    document.getElementById('pushFriction').onclick = () => {
+        const appliedF = parseFloat(appliedForceSlider.value);
+        const mass = parseFloat(massSlider.value);
+        const mu = parseFloat(muSlider.value);
+        const FfrictionMax = mu * mass * 9.8;
+        
+        if (appliedF > FfrictionMax) {
+            isMoving = true;
+            blockVel = 0;
+        }
+    };
+
+    document.getElementById('resetFriction').onclick = () => {
+        isMoving = false; blockX = 150; blockVel = 0; appliedForceSlider.value = 0; updateLabels();
+        document.getElementById('frictionState').textContent = 'Покой';
+        document.getElementById('frictionState').style.color = '#8892b0';
+    };
+    draw();
+})();
+
+// ==================== 4. PRESSURE SIMULATION ====================
+(function() {
+    const canvas = document.getElementById('canvasPressure');
+    const ctx = canvas.getContext('2d');
+    let animFrame;
+
+    const pressMass = document.getElementById('pressMass');
+    const pressArea = document.getElementById('pressArea');
+
+    function updateLabels() {
+        document.getElementById('pressMassVal').textContent = pressMass.value;
+        // ИСПРАВЛЕНИЕ 2: Корректный перевод см² в м² (деление на 10000)
+        const area = pressArea.value / 10000;
+        document.getElementById('pressAreaVal').textContent = area.toFixed(4);
+    }
+    pressMass.oninput = pressArea.oninput = updateLabels;
+
+    document.getElementById('shapeSelect').onchange = () => draw();
+
+    function draw() {
+        const W = canvas.width, H = canvas.height;
+        ctx.clearRect(0, 0, W, H);
+
+        const mass = parseFloat(pressMass.value);
+        const areaCm2 = parseFloat(pressArea.value);
+        const area = areaCm2 / 10000; // ИСПРАВЛЕНИЕ 2: Формула внутри расчета
+        const shape = document.getElementById('shapeSelect').value;
+
+        const g = 9.8, F = mass * g, p = F / area;
+
+        const surfY = 280, deform = Math.min(p / 50000, 30);
+
+        ctx.fillStyle = '#1a2040'; ctx.beginPath();
+        ctx.moveTo(50, surfY); ctx.lineTo(W / 2 - 60, surfY);
+        ctx.quadraticCurveTo(W / 2, surfY + deform, W / 2 + 60, surfY);
+        ctx.lineTo(W - 50, surfY); ctx.lineTo(W - 50, H - 20); ctx.lineTo(50, H - 20); ctx.closePath(); ctx.fill();
+
+        ctx.strokeStyle = 'rgba(100,140,255,0.1)'; ctx.lineWidth = 1;
+        for (let y = surfY + 15; y < H - 20; y += 15) { ctx.beginPath(); ctx.moveTo(50, y); ctx.lineTo(W - 50, y); ctx.stroke(); }
+
+        let objW, objH;
+        if (shape === 'block') { objW = 60; objH = 50; }
+        else if (shape === 'wide') { objW = 120; objH = 30; }
+        else { objW = 15; objH = 80; }
+
+        const objX = W / 2 - objW / 2, objY = surfY - objH - deform;
+
+        const pressureIntensity = clamp(deform / 30, 0, 1);
+        ctx.fillStyle = `rgba(239,68,68,${pressureIntensity * 0.3})`; ctx.beginPath(); ctx.ellipse(W / 2, surfY + deform / 2, objW + 10, 15, 0, 0, Math.PI * 2); ctx.fill();
+
+        const gradient = ctx.createLinearGradient(objX, objY, objX, objY + objH);
+        gradient.addColorStop(0, '#3b82f6'); gradient.addColorStop(1, '#1e40af');
+        ctx.fillStyle = gradient; ctx.beginPath(); ctx.roundRect(objX, objY, objW, objH, shape === 'sharp' ? [4, 4, 1, 1] : 4); ctx.fill();
+
+        ctx.fillStyle = '#fff'; ctx.font = 'bold 12px Inter'; ctx.textAlign = 'center'; ctx.fillText(mass + ' кг', W / 2, objY + objH / 2 + 4);
+
+        ctx.strokeStyle = '#f59e0b'; ctx.lineWidth = 3; const arrowStart = objY - 20, arrowLen = Math.min(F * 1.5, 100);
+        ctx.beginPath(); ctx.moveTo(W / 2, arrowStart); ctx.lineTo(W / 2, arrowStart + arrowLen); ctx.stroke();
+        ctx.fillStyle = '#f59e0b'; ctx.beginPath(); ctx.moveTo(W / 2, arrowStart + arrowLen + 8); ctx.lineTo(W / 2 - 5, arrowStart + arrowLen - 2); ctx.lineTo(W / 2 + 5, arrowStart + arrowLen - 2); ctx.fill();
+        ctx.font = 'bold 11px Inter'; ctx.fillText('F = ' + F.toFixed(1) + ' Н', W / 2, arrowStart - 5);
+
+        ctx.fillStyle = '#ef4444'; ctx.font = '13px Inter';
+        const pStr = p < 1000 ? p.toFixed(0) + ' Па' : (p / 1000).toFixed(1) + ' кПа';
+        ctx.fillText('p = ' + pStr, W / 2, surfY + deform + 30);
+        ctx.textAlign = 'left';
+
+        document.getElementById('forceResult').textContent = F.toFixed(1) + ' Н';
+        document.getElementById('areaResult').textContent = area.toFixed(4) + ' м²';
+        document.getElementById('pressureResult').textContent = pStr;
+        document.getElementById('deformResult').textContent = deform.toFixed(1) + ' ед.';
+
+        animFrame = requestAnimationFrame(draw);
+    }
+
+    document.getElementById('applyPressure').onclick = () => draw();
+    document.getElementById('resetPressure').onclick = () => { pressMass.value = 5; pressArea.value = 10; updateLabels(); draw(); };
+    draw();
+})();
+
+// ==================== 5. ARCHIMEDES SIMULATION ====================
+(function() {
+    const canvas = document.getElementById('canvasArchimedes');
+    const ctx = canvas.getContext('2d');
+    let animFrame, objY = 40, objVel = 0, animating = false;
+
+    const archVol = document.getElementById('archVolume');
+    const archMass = document.getElementById('archMass');
+
+    function updateLabels() {
+        document.getElementById('archVolumeVal').textContent = (archVol.value / 10000).toFixed(4);
+        document.getElementById('archMassVal').textContent = parseFloat(archMass.value).toFixed(1);
+    }
+    archVol.oninput = archMass.oninput = updateLabels;
+
+    function draw() {
+        const W = canvas.width, H = canvas.height;
+        ctx.clearRect(0, 0, W, H);
+
+        const vol = archVol.value / 10000;
+        const mass = parseFloat(archMass.value);
+        const fluidDens = parseFloat(document.getElementById('archFluidSelect').value);
+        const g = 9.8, Fg = mass * g, FA = fluidDens * g * vol;
+
+        const waterLevel = 160, waterBottom = 360;
+
+        const gradient = ctx.createLinearGradient(0, waterLevel, 0, waterBottom);
+        gradient.addColorStop(0, 'rgba(59,130,246,0.12)'); gradient.addColorStop(1, 'rgba(59,130,246,0.35)');
+        ctx.fillStyle = gradient; ctx.fillRect(100, waterLevel, W - 200, waterBottom - waterLevel);
+
+        ctx.strokeStyle = 'rgba(96,165,250,0.4)'; ctx.lineWidth = 2; ctx.beginPath();
+        for (let x = 100; x < W - 100; x += 2) {
+            const y = waterLevel + Math.sin((x + Date.now() * 0.002) * 0.03) * 2;
+            if (x === 100) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        } ctx.stroke();
+
+        ctx.strokeStyle = 'rgba(100,140,255,0.2)'; ctx.lineWidth = 3; ctx.beginPath();
+        ctx.moveTo(100, 40); ctx.lineTo(100, waterBottom + 20); ctx.lineTo(W - 100, waterBottom + 20); ctx.lineTo(W - 100, 40); ctx.stroke();
+
+        if (animating) {
+            const objSize = 25 + vol * 300;
+            const submerged = objY + objSize / 2 > waterLevel;
+            if (submerged) {
+                const subRatio = clamp((objY + objSize / 2 - waterLevel) / objSize, 0, 1);
+                const FA_cur = FA * subRatio;
+                const net = Fg - FA_cur;
+                const acc = net / mass;
+                objVel += acc * 0.016; objVel *= 0.95;
+            } else { objVel += 9.8 * 0.016; }
+            objY += objVel;
+
+            if (objY + objSize / 2 > waterBottom - 10) {
+                objY = waterBottom - 10 - objSize / 2; objVel *= -0.3;
+                if (Math.abs(objVel) < 0.3) objVel = 0;
+            }
+
+            if (FA > Fg) {
+                const eqY = waterLevel - objSize / 2 * (1 - mass / (fluidDens * vol));
+                if (objY > eqY && objVel > 0) {
+                    objY = lerp(objY, eqY, 0.05);
+                    if (Math.abs(objY - eqY) < 0.5) objVel = 0;
+                }
+            }
+        }
+
+        const objSize = 25 + vol * 300, objX = W / 2;
+        const color = FA > Fg ? '#22c55e' : '#ef4444';
+        ctx.fillStyle = color; ctx.beginPath(); ctx.arc(objX, objY, objSize / 2, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = 'rgba(255,255,255,0.2)'; ctx.lineWidth = 1; ctx.stroke();
+
+        const arrowX = objX + objSize / 2 + 40, gLen = Math.min(Fg * 3, 80);
+        ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(arrowX, objY); ctx.lineTo(arrowX, objY + gLen); ctx.stroke();
+        ctx.fillStyle = '#ef4444'; ctx.beginPath(); ctx.moveTo(arrowX, objY + gLen + 6); ctx.lineTo(arrowX - 4, objY + gLen - 2); ctx.lineTo(arrowX + 4, objY + gLen - 2); ctx.fill();
+        ctx.fillStyle = '#ef4444'; ctx.font = 'bold 11px Inter'; ctx.fillText('Fт = ' + Fg.toFixed(2) + ' Н', arrowX + 8, objY + gLen / 2 + 4);
+
+        const FALen = Math.min(FA * 3, 80);
+        ctx.strokeStyle = '#22c55e'; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(arrowX, objY); ctx.lineTo(arrowX, objY - FALen); ctx.stroke();
+        ctx.fillStyle = '#22c55e'; ctx.beginPath(); ctx.moveTo(arrowX, objY - FALen - 6); ctx.lineTo(arrowX - 4, objY - FALen + 2); ctx.lineTo(arrowX + 4, objY - FALen + 2); ctx.fill();
+        ctx.fillText('FA = ' + FA.toFixed(2) + ' Н', arrowX + 8, objY - FALen / 2 + 4);
+
+        let state;
+        if (FA > Fg) state = 'Всплывает ↑';
+        else if (Math.abs(FA - Fg) < 0.1) state = 'Равновесие';
+        else state = 'Тонет ↓';
+
+        document.getElementById('archResultFA').textContent = FA.toFixed(3) + ' Н';
+        document.getElementById('archResultFG').textContent = Fg.toFixed(3) + ' Н';
+        document.getElementById('archResultState').textContent = state;
+        document.getElementById('archResultState').style.color = FA > Fg ? '#22c55e' : '#ef4444';
+
+        animFrame = requestAnimationFrame(draw);
+    }
+
+    document.getElementById('dipArchimedes').onclick = () => { objY = 40; objVel = 0; animating = true; };
+    document.getElementById('resetArchimedes').onclick = () => { animating = false; objY = 40; objVel = 0; document.getElementById('archResultState').textContent = '—'; };
+    draw();
+})();
+
+// ==================== 6. MOLECULES SIMULATION ====================
+(function() {
+    const canvas = document.getElementById('canvasMolecules');
+    const ctx = canvas.getContext('2d');
+    let animFrame, particles = [], running = false;
+
+    const tempSlider = document.getElementById('temperature');
+    const molCountSlider = document.getElementById('molCount');
+
+    function updateLabels() {
+        document.getElementById('tempVal').textContent = tempSlider.value;
+        document.getElementById('molCountVal').textContent = molCountSlider.value;
+    }
+    tempSlider.oninput = molCountSlider.oninput = updateLabels;
+
+    function initParticles() {
+        particles = [];
+        const count = parseInt(molCountSlider.value);
+        const state = document.getElementById('stateSelect').value;
+        const W = canvas.width, H = canvas.height;
+
+        for (let i = 0; i < count; i++) {
+            const isB = document.getElementById('showDiffusion').checked && i >= count / 2;
+            const margin = 30;
+            let px, py;
+
+            if (state === 'solid') {
+                const cols = Math.ceil(Math.sqrt(count * (W / H)));
+                const rows = Math.ceil(count / cols);
+                const spacing = Math.min((W - margin * 2) / (cols + 1), (H - margin * 2) / (rows + 1));
+                const col = i % cols, row = Math.floor(i / cols);
+                px = margin + col * spacing + spacing / 2 + W / 2 - (cols * spacing) / 2;
+                py = margin + row * spacing + spacing / 2 + H / 2 - (rows * spacing) / 2;
+            } else {
+                px = margin + Math.random() * (W - margin * 2);
+                py = margin + Math.random() * (H - margin * 2);
+            }
+            particles.push({ x: px, y: py, ox: px, oy: py, vx: (Math.random() - 0.5) * 2, vy: (Math.random() - 0.5) * 2, isB: isB, radius: 4 });
         }
     }
 
-    /* ========== ГЛАВНЫЙ ЦИКЛ ========== */
-    function frame(){
-        time+=0.016;
-        const sp=0.12;
-        cRhoL=lerp(cRhoL,tRhoL,sp);
-        cRhoB=lerp(cRhoB,tRhoB,sp);
-        cSub=lerp(cSub,tSub,sp);
-        cVol=lerp(cVol,tVol,sp);
+    function draw() {
+        const W = canvas.width, H = canvas.height;
+        ctx.clearRect(0, 0, W, H);
+        if (!running) { animFrame = requestAnimationFrame(draw); return; }
 
-        const Vt=cVol/1000*0.001, Vsub=Vt*(cSub/100);
-        const Fa=cRhoL*G*Vsub, Fg=cRhoB*G*Vt;
-        const data={rhoL:cRhoL,rhoB:cRhoB,Vt,Vsub,Fa,Fg,Fn:Fa-Fg,mass:cRhoB*Vt};
+        const temp = parseFloat(tempSlider.value);
+        const state = document.getElementById('stateSelect').value;
+        const showVectors = document.getElementById('showVectors').checked;
+        const speedFactor = temp / 300;
+        const border = 30;
+        let totalSpeed = 0;
 
-        if(time-lastBub>0.16&&cSub>5){spawnBubs();lastBub=time;}
-        tickBubs();
+        particles.forEach((p, idx) => {
+            if (state === 'solid') {
+                p.x = p.ox + (Math.random() - 0.5) * speedFactor * 2;
+                p.y = p.oy + (Math.random() - 0.5) * speedFactor * 2;
+                totalSpeed += speedFactor;
+            } else if (state === 'liquid') {
+                p.vx += (Math.random() - 0.5) * speedFactor * 0.3;
+                p.vy += (Math.random() - 0.5) * speedFactor * 0.3;
+                p.vx *= 0.98; p.vy *= 0.98;
+                p.x += p.vx * speedFactor * 0.5; p.y += p.vy * speedFactor * 0.5;
+                totalSpeed += Math.sqrt(p.vx * p.vx + p.vy * p.vy) * speedFactor * 0.5;
+                if (p.x < border) { p.x = border; p.vx *= -1; } if (p.x > W - border) { p.x = W - border; p.vx *= -1; }
+                if (p.y < border) { p.y = border; p.vy *= -1; } if (p.y > H - border) { p.y = H - border; p.vy *= -1; }
+            } else {
+                p.vx += (Math.random() - 0.5) * speedFactor * 0.5;
+                p.vy += (Math.random() - 0.5) * speedFactor * 0.5;
+                const maxSpd = speedFactor * 5, sp = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+                if (sp > maxSpd) { p.vx = (p.vx / sp) * maxSpd; p.vy = (p.vy / sp) * maxSpd; }
+                p.x += p.vx; p.y += p.vy;
+                totalSpeed += Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+                if (p.x < border) { p.x = border; p.vx *= -1; } if (p.x > W - border) { p.x = W - border; p.vx *= -1; }
+                if (p.y < border) { p.y = border; p.vy *= -1; } if (p.y > H - border) { p.y = H - border; p.vy *= -1; }
+            }
+        });
 
-        drawBg(); drawTank(); drawLiquid(); drawBubs(); drawBody(); drawLevel(); drawBrackets(); drawForces(data);
-        updateUI(data);
-        requestAnimationFrame(frame);
+        particles.forEach(p => {
+            ctx.fillStyle = p.isB ? '#f59e0b' : '#60a5fa'; ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = p.isB ? 'rgba(245,158,11,0.15)' : 'rgba(96,165,250,0.15)'; ctx.beginPath(); ctx.arc(p.x, p.y, p.radius * 2.5, 0, Math.PI * 2); ctx.fill();
+            if (showVectors && state !== 'solid') {
+                ctx.strokeStyle = p.isB ? 'rgba(245,158,11,0.4)' : 'rgba(96,165,250,0.4)'; ctx.lineWidth = 1;
+                ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x + p.vx * 8, p.y + p.vy * 8); ctx.stroke();
+            }
+        });
+
+        ctx.strokeStyle = 'rgba(100,140,255,0.15)'; ctx.lineWidth = 2; ctx.strokeRect(border - 1, border - 1, W - border * 2 + 2, H - border * 2 + 2);
+        const stateLabels = { solid: 'Твёрдое тело', liquid: 'Жидкость', gas: 'Газ' };
+        ctx.fillStyle = '#8892b0'; ctx.font = '12px Inter'; ctx.fillText(stateLabels[state] + ' | T = ' + temp + ' К', border + 5, border + 15);
+
+        const avgSpd = particles.length > 0 ? totalSpeed / particles.length : 0;
+        document.getElementById('avgSpeed').textContent = avgSpd.toFixed(2) + ' усл. ед.';
+        document.getElementById('numMolecules').textContent = particles.length;
+        document.getElementById('relEnergy').textContent = (speedFactor).toFixed(2);
+
+        animFrame = requestAnimationFrame(draw);
     }
-    requestAnimationFrame(frame);
-    </script>
+
+    document.getElementById('startMolecules').onclick = () => { running = true; initParticles(); };
+    document.getElementById('resetMolecules').onclick = () => { running = false; particles = []; ctx.clearRect(0, 0, canvas.width, canvas.height); };
+    document.getElementById('stateSelect').onchange = () => { if (running) initParticles(); };
+    document.getElementById('showDiffusion').onchange = () => { if (running) initParticles(); };
+    draw();
+})();
+
+// ==================== 7. LEVER SIMULATION ====================
+(function() {
+    const canvas = document.getElementById('canvasLever');
+    const ctx = canvas.getContext('2d');
+    let animFrame;
+
+    const massL = document.getElementById('leverMassL');
+    const distL = document.getElementById('leverDistL');
+    const massR = document.getElementById('leverMassR');
+    const distR = document.getElementById('leverDistR');
+
+    function updateLabels() {
+        document.getElementById('leverMassLVal').textContent = parseFloat(massL.value).toFixed(1);
+        document.getElementById('leverDistLVal').textContent = distL.value;
+        document.getElementById('leverMassRVal').textContent = parseFloat(massR.value).toFixed(1);
+        document.getElementById('leverDistRVal').textContent = distR.value;
+    }
+    massL.oninput = distL.oninput = massR.oninput = distR.oninput = updateLabels;
+
+    function draw() {
+        const W = canvas.width, H = canvas.height;
+        ctx.clearRect(0, 0, W, H);
+
+        const mL = parseFloat(massL.value), dL = parseFloat(distL.value);
+        const mR = parseFloat(massR.value), dR = parseFloat(distR.value);
+        const g = 9.8, ML = mL * g * dL, MR = mR * g * dR;
+
+        let angle = 0;
+        if (Math.abs(ML - MR) > 0.1) {
+            angle = Math.atan2(MR - ML, 200) * 0.8;
+            angle = clamp(angle, -0.3, 0.3);
+        }
+
+        const centerX = W / 2, centerY = 200, leverLen = 250;
+
+        ctx.fillStyle = '#4a5070'; ctx.beginPath();
+        ctx.moveTo(centerX, centerY + 15); ctx.lineTo(centerX - 15, centerY + 40); ctx.lineTo(centerX + 15, centerY + 40); ctx.closePath(); ctx.fill();
+
+        ctx.save(); ctx.translate(centerX, centerY); ctx.rotate(angle);
+
+        ctx.strokeStyle = '#60a5fa'; ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(-leverLen, 0); ctx.lineTo(leverLen, 0); ctx.stroke();
+        ctx.strokeStyle = 'rgba(100,140,255,0.3)'; ctx.lineWidth = 1;
+        for (let i = -5; i <= 5; i++) { if (i === 0) continue; ctx.beginPath(); ctx.moveTo(i * 50, -8); ctx.lineTo(i * 50, 8); ctx.stroke(); }
+
+        if (mL > 0) {
+            const lx = -dL * 50, wSize = 20 + mL * 5;
+            ctx.strokeStyle = 'rgba(100,140,255,0.5)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(lx, 0); ctx.lineTo(lx, 10); ctx.stroke();
+            ctx.fillStyle = '#3b82f6'; ctx.beginPath(); ctx.roundRect(lx - wSize / 2, 10, wSize, wSize, 4); ctx.fill();
+            ctx.fillStyle = '#fff'; ctx.font = 'bold 10px Inter'; ctx.textAlign = 'center'; ctx.fillText(mL + ' кг', lx, 10 + wSize / 2 + 3);
+        }
+
+        if (mR > 0) {
+            const rx = dR * 50, wSize = 20 + mR * 5;
+            ctx.strokeStyle = 'rgba(245,158,11,0.5)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(rx, 0); ctx.lineTo(rx, 10); ctx.stroke();
+            ctx.fillStyle = '#f59e0b'; ctx.beginPath(); ctx.roundRect(rx - wSize / 2, 10, wSize, wSize, 4); ctx.fill();
+            ctx.fillStyle = '#fff'; ctx.font = 'bold 10px Inter'; ctx.textAlign = 'center'; ctx.fillText(mR + ' кг', rx, 10 + wSize / 2 + 3);
+        }
+        ctx.restore();
+
+        ctx.textAlign = 'left'; ctx.font = 'bold 12px Inter';
+        ctx.fillStyle = '#3b82f6'; ctx.fillText('M₁ = ' + ML.toFixed(1) + ' Н·м', 30, 40);
+        ctx.fillStyle = '#f59e0b'; ctx.fillText('M₂ = ' + MR.toFixed(1) + ' Н·м', W - 180, 40);
+
+        let state, color;
+        if (Math.abs(ML - MR) < 0.5) { state = '⚖️ Равновесие!'; color = '#22c55e'; }
+        else if (ML > MR) { state = '⬇️ Наклон влево'; color = '#3b82f6'; }
+        else { state = '⬇️ Наклон вправо'; color = '#f59e0b'; }
+
+        ctx.fillStyle = color; ctx.font = 'bold 16px Inter'; ctx.textAlign = 'center'; ctx.fillText(state, W / 2, H - 30);
+
+        const adv = mR > 0 ? (mL / mR).toFixed(2) : '∞';
+        document.getElementById('momentL').textContent = ML.toFixed(2) + ' Н·м';
+        document.getElementById('momentR').textContent = MR.toFixed(2) + ' Н·м';
+        document.getElementById('leverState').textContent = state;
+        document.getElementById('leverState').style.color = color;
+        document.getElementById('leverAdvantage').textContent = adv + '×';
+
+        animFrame = requestAnimationFrame(draw);
+    }
+
+    document.getElementById('resetLever').onclick = () => { massL.value = 2; distL.value = 3; massR.value = 3; distR.value = 2; updateLabels(); };
+    draw();
+})();
+
+// ==================== 8. WORK SIMULATION ====================
+(function() {
+    const canvas = document.getElementById('canvasWork');
+    const ctx = canvas.getContext('2d');
+    let animFrame, running = false, progress = 0;
+
+    const workForce = document.getElementById('workForce');
+    const workDist = document.getElementById('workDist');
+    const workTime = document.getElementById('workTime');
+    const workAngle = document.getElementById('workAngle');
+
+    function updateLabels() {
+        document.getElementById('workForceVal').textContent = workForce.value;
+        document.getElementById('workDistVal').textContent = workDist.value;
+        document.getElementById('workTimeVal').textContent = workTime.value;
+        document.getElementById('workAngleVal').textContent = workAngle.value;
+    }
+    workForce.oninput = workDist.oninput = workTime.oninput = workAngle.oninput = updateLabels;
+
+    function draw() {
+        const W = canvas.width, H = canvas.height;
+        ctx.clearRect(0, 0, W, H);
+
+        const F = parseFloat(workForce.value), S = parseFloat(workDist.value);
+        const t = parseFloat(workTime.value), angle = parseFloat(workAngle.value) * Math.PI / 180;
+        const cosA = Math.cos(angle), A = F * S * cosA, N = A / t;
+
+        const groundY = 250;
+        ctx.fillStyle = '#1a2040'; ctx.fillRect(40, groundY, W - 80, H - 270);
+
+        ctx.strokeStyle = 'rgba(100,140,255,0.1)'; ctx.lineWidth = 1;
+        for (let i = 0; i <= S; i++) {
+            const x = 80 + (i / S) * (W - 160);
+            ctx.beginPath(); ctx.moveTo(x, groundY); ctx.lineTo(x, groundY + 10); ctx.stroke();
+            ctx.fillStyle = '#8892b0'; ctx.font = '10px Inter'; ctx.textAlign = 'center'; ctx.fillText(i + ' м', x, groundY + 22);
+        }
+
+        const boxStartX = 80, boxEndX = W - 120, boxX = boxStartX + progress * (boxEndX - boxStartX), boxSize = 35 + F / 10;
+        
+        ctx.fillStyle = 'rgba(96,165,250,0.08)'; ctx.fillRect(boxStartX, groundY - boxSize, boxX - boxStartX, boxSize);
+
+        const gradient = ctx.createLinearGradient(boxX, groundY - boxSize, boxX, groundY);
+        gradient.addColorStop(0, '#3b82f6'); gradient.addColorStop(1, '#1e40af');
+        ctx.fillStyle = gradient; ctx.beginPath(); ctx.roundRect(boxX - boxSize / 2, groundY - boxSize, boxSize, boxSize, 4); ctx.fill();
+
+        if (running || progress > 0) {
+            const arrowLen = 40 + F * 0.5;
+            const arrowEndX = boxX - Math.cos(angle) * arrowLen;
+            const arrowEndY = (groundY - boxSize / 2) - Math.sin(angle) * arrowLen;
+
+            ctx.strokeStyle = '#10b981'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(arrowEndX, arrowEndY); ctx.lineTo(boxX, groundY - boxSize / 2); ctx.stroke();
+            ctx.fillStyle = '#10b981'; ctx.beginPath();
+            ctx.moveTo(boxX + Math.cos(angle) * 8, groundY - boxSize / 2 - Math.sin(angle) * 8);
+            ctx.lineTo(boxX + Math.cos(angle) * 8 - Math.cos(angle - 0.3) * 10, groundY - boxSize / 2 - Math.sin(angle) * 8 + Math.sin(angle - 0.3) * 10);
+            ctx.lineTo(boxX + Math.cos(angle) * 8 - Math.cos(angle + 0.3) * 10, groundY - boxSize / 2 - Math.sin(angle) * 8 + Math.sin(angle + 0.3) * 10);
+            ctx.fill();
+
+            ctx.fillStyle = '#10b981'; ctx.font = 'bold 11px Inter'; ctx.textAlign = 'center'; ctx.fillText('F = ' + F + ' Н', arrowEndX - 10, arrowEndY - 10);
+
+            ctx.strokeStyle = 'rgba(250,204,21,0.5)'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(boxX, groundY - boxSize / 2, 25, -angle, 0); ctx.stroke();
+            ctx.fillStyle = '#f0c040'; ctx.font = '10px Inter'; ctx.fillText('α = ' + (angle * 180 / Math.PI).toFixed(0) + '°', boxX + 30, groundY - boxSize / 2 - 5);
+        }
+        ctx.textAlign = 'left';
+
+        ctx.fillStyle = '#1a2040'; ctx.fillRect(80, groundY + 35, W - 160, 8);
+        ctx.fillStyle = '#10b981'; ctx.fillRect(80, groundY + 35, (W - 160) * progress, 8);
+
+        if (running) {
+            progress += 1 / (t * 60);
+            if (progress >= 1) { progress = 1; running = false; }
+        }
+
+        const AStr = A < 1000 ? A.toFixed(1) + ' Дж' : (A / 1000).toFixed(2) + ' кДж';
+        const NStr = N < 1000 ? N.toFixed(1) + ' Вт' : (N / 1000).toFixed(2) + ' кВт';
+        document.getElementById('workResult').textContent = AStr;
+        document.getElementById('powerResult').textContent = NStr;
+        document.getElementById('cosAngle').textContent = cosA.toFixed(4);
+
+        animFrame = requestAnimationFrame(draw);
+    }
+
+    document.getElementById('startWork').onclick = () => { running = true; progress = 0; };
+    document.getElementById('resetWork').onclick = () => { running = false; progress = 0; document.getElementById('workResult').textContent = '—'; document.getElementById('powerResult').textContent = '—'; };
+    draw();
+})();
+
+// ==================== CANVAS ROUNDRECT POLYFILL ====================
+if (!CanvasRenderingContext2D.prototype.roundRect) {
+    CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
+        if (typeof r === 'number') r = [r, r, r, r];
+        if (!Array.isArray(r)) r = [4, 4, 4, 4];
+        while (r.length < 4) r.push(r[0]);
+        this.moveTo(x + r[0], y);
+        this.lineTo(x + w - r[1], y); this.arcTo(x + w, y, x + w, y + r[1], r[1]);
+        this.lineTo(x + w, y + h - r[2]); this.arcTo(x + w, y + h, x + w - r[2], y + h, r[2]);
+        this.lineTo(x + r[3], y + h); this.arcTo(x, y + h, x, y + h - r[3], r[3]);
+        this.lineTo(x, y + r[0]); this.arcTo(x, y, x + r[0], y, r[0]);
+        this.closePath(); return this;
+    };
+}
+</script>
 </body>
 </html>
