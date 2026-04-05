@@ -6,35 +6,94 @@
     <title>Физика 7 класс — Виртуальные эксперименты</title>
     <link href="https://cdn.jsdelivr.net/npm/fontsource-inter@5.0.18/index.min.css" rel="stylesheet">
     <style>
+        :root {
+            --bg-primary: #0a0e1a;
+            --bg-secondary: #0d1225;
+            --bg-card: #111628;
+            --bg-input: #1a2040;
+            --text-primary: #e0e6f0;
+            --text-secondary: #8892b0;
+            --text-muted: #a0a8c0;
+            --border-color: rgba(100, 140, 255, 0.15);
+            --accent-blue: #60a5fa;
+            --formula-bg: linear-gradient(135deg, rgba(251, 191, 36, 0.15), rgba(245, 158, 11, 0.1));
+            --formula-border: rgba(251, 191, 36, 0.5);
+            --formula-color: #fbbf24;
+            --info-bg: linear-gradient(135deg, rgba(250, 204, 21, 0.1), rgba(245, 158, 11, 0.05));
+            --info-border: rgba(250, 204, 21, 0.35);
+            --info-color: #f0c040;
+            --header-bg: linear-gradient(135deg, #1a1f3a 0%, #0d1225 100%);
+            --canvas-bg: #0a0e1a;
+            --track-bg: #1a2040;
+        }
+        
+        [data-theme="light"] {
+            --bg-primary: #f8fafc;
+            --bg-secondary: #f1f5f9;
+            --bg-card: #ffffff;
+            --bg-input: #e2e8f0;
+            --text-primary: #1e293b;
+            --text-secondary: #475569;
+            --text-muted: #64748b;
+            --border-color: rgba(59, 130, 246, 0.2);
+            --accent-blue: #2563eb;
+            --formula-bg: linear-gradient(135deg, rgba(234, 179, 8, 0.15), rgba(202, 138, 4, 0.1));
+            --formula-border: rgba(234, 179, 8, 0.5);
+            --formula-color: #ca8a04;
+            --info-bg: linear-gradient(135deg, rgba(234, 179, 8, 0.1), rgba(202, 138, 4, 0.05));
+            --info-border: rgba(234, 179, 8, 0.4);
+            --info-color: #a16207;
+            --header-bg: linear-gradient(135deg, #e2e8f0 0%, #f1f5f9 100%);
+            --canvas-bg: #f1f5f9;
+            --track-bg: #e2e8f0;
+        }
+        
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; background: #0a0e1a; color: #e0e6f0; min-height: 100vh; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; transition: background 0.3s, color 0.3s; }
         
         .app-header {
-            background: linear-gradient(135deg, #1a1f3a 0%, #0d1225 100%);
-            border-bottom: 1px solid rgba(100, 140, 255, 0.15);
+            background: var(--header-bg);
+            border-bottom: 1px solid var(--border-color);
             padding: 20px 30px;
             display: flex;
             align-items: center;
+            justify-content: space-between;
             gap: 15px;
         }
+        .app-header .header-left { display: flex; align-items: center; gap: 15px; }
         .app-header .logo { font-size: 28px; }
-        .app-header h1 { font-size: 22px; font-weight: 700; background: linear-gradient(135deg, #60a5fa, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .app-header .subtitle { font-size: 13px; color: #8892b0; margin-top: 2px; }
+        .app-header h1 { font-size: 22px; font-weight: 700; background: linear-gradient(135deg, var(--accent-blue), #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .app-header .subtitle { font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
+        
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .theme-toggle:hover { transform: scale(1.05); box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .theme-toggle span { font-size: 18px; }
+        .theme-toggle .theme-label { font-size: 13px; color: var(--text-secondary); font-weight: 500; }
 
         .nav-tabs {
             display: flex;
             gap: 6px;
             padding: 12px 30px;
-            background: #0d1225;
+            background: var(--bg-secondary);
             overflow-x: auto;
-            border-bottom: 1px solid rgba(100, 140, 255, 0.1);
+            border-bottom: 1px solid var(--border-color);
         }
         .nav-tab {
             padding: 10px 18px;
             border-radius: 10px;
-            border: 1px solid rgba(100, 140, 255, 0.15);
-            background: rgba(30, 35, 60, 0.5);
-            color: #8892b0;
+            border: 1px solid var(--border-color);
+            background: var(--bg-card);
+            color: var(--text-secondary);
             cursor: pointer;
             font-size: 13px;
             font-weight: 500;
@@ -44,11 +103,11 @@
             align-items: center;
             gap: 6px;
         }
-        .nav-tab:hover { background: rgba(60, 70, 120, 0.5); color: #c0c8e0; }
+        .nav-tab:hover { background: var(--bg-input); color: var(--text-primary); }
         .nav-tab.active {
             background: linear-gradient(135deg, rgba(96, 165, 250, 0.2), rgba(167, 139, 250, 0.2));
-            border-color: rgba(96, 165, 250, 0.4);
-            color: #60a5fa;
+            border-color: var(--accent-blue);
+            color: var(--accent-blue);
         }
         .nav-tab .tab-icon { font-size: 16px; }
 
@@ -61,19 +120,21 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         .exp-header { margin-bottom: 20px; }
-        .exp-header h2 { font-size: 20px; font-weight: 700; color: #c0c8e0; }
+        .exp-header h2 { font-size: 20px; font-weight: 700; color: var(--text-primary); }
         .exp-header .formula { 
             display: inline-block; 
-            margin-top: 8px; 
-            padding: 8px 16px; 
-            background: rgba(96, 165, 250, 0.1); 
-            border: 1px solid rgba(96, 165, 250, 0.2); 
-            border-radius: 8px; 
+            margin-top: 10px; 
+            padding: 12px 20px; 
+            background: var(--formula-bg); 
+            border: 2px solid var(--formula-border); 
+            border-radius: 10px; 
             font-family: 'Courier New', monospace; 
-            font-size: 15px; 
-            color: #60a5fa; 
+            font-size: 18px; 
+            font-weight: 700;
+            color: var(--formula-color); 
+            text-shadow: 0 0 10px rgba(251, 191, 36, 0.3);
         }
-        .exp-header .description { margin-top: 10px; color: #8892b0; font-size: 14px; line-height: 1.6; }
+        .exp-header .description { margin-top: 10px; color: var(--text-secondary); font-size: 14px; line-height: 1.6; }
 
         .sim-layout {
             display: grid;
@@ -86,28 +147,29 @@
         }
 
         .canvas-wrapper {
-            background: #111628;
+            background: var(--bg-card);
             border-radius: 16px;
-            border: 1px solid rgba(100, 140, 255, 0.1);
+            border: 1px solid var(--border-color);
             overflow: hidden;
             position: relative;
         }
         .canvas-wrapper canvas {
             display: block;
             width: 100%;
-            background: #0a0e1a;
+            height: auto;
+            background: var(--canvas-bg);
         }
 
         .controls-panel {
-            background: #111628;
+            background: var(--bg-card);
             border-radius: 16px;
-            border: 1px solid rgba(100, 140, 255, 0.1);
+            border: 1px solid var(--border-color);
             padding: 20px;
         }
         .controls-panel h3 {
             font-size: 14px;
             font-weight: 600;
-            color: #8892b0;
+            color: var(--text-secondary);
             text-transform: uppercase;
             letter-spacing: 1px;
             margin-bottom: 15px;
@@ -119,11 +181,11 @@
             justify-content: space-between;
             align-items: center;
             font-size: 13px;
-            color: #a0a8c0;
+            color: var(--text-muted);
             margin-bottom: 6px;
         }
         .control-group label .value {
-            color: #60a5fa;
+            color: var(--accent-blue);
             font-weight: 600;
             font-family: 'Courier New', monospace;
         }
@@ -131,7 +193,7 @@
             width: 100%;
             height: 6px;
             -webkit-appearance: none;
-            background: #1a2040;
+            background: var(--bg-input);
             border-radius: 3px;
             outline: none;
         }
@@ -146,15 +208,15 @@
         }
 
         .results-panel {
-            background: rgba(96, 165, 250, 0.05);
-            border: 1px solid rgba(96, 165, 250, 0.15);
+            background: rgba(96, 165, 250, 0.08);
+            border: 1px solid var(--border-color);
             border-radius: 12px;
             padding: 15px;
             margin-top: 15px;
         }
         .results-panel h4 {
             font-size: 12px;
-            color: #8892b0;
+            color: var(--text-secondary);
             text-transform: uppercase;
             letter-spacing: 1px;
             margin-bottom: 10px;
@@ -163,12 +225,12 @@
             display: flex;
             justify-content: space-between;
             padding: 6px 0;
-            border-bottom: 1px solid rgba(100, 140, 255, 0.05);
+            border-bottom: 1px solid var(--border-color);
             font-size: 13px;
         }
         .result-item:last-child { border-bottom: none; }
-        .result-item .r-label { color: #8892b0; }
-        .result-item .r-value { color: #60a5fa; font-weight: 600; font-family: 'Courier New', monospace; }
+        .result-item .r-label { color: var(--text-secondary); }
+        .result-item .r-value { color: var(--accent-blue); font-weight: 600; font-family: 'Courier New', monospace; }
 
         .btn {
             padding: 10px 20px;
@@ -187,39 +249,43 @@
         }
         .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(59, 130, 246, 0.3); }
         .btn-secondary {
-            background: rgba(100, 140, 255, 0.1);
-            border: 1px solid rgba(100, 140, 255, 0.2);
-            color: #8892b0;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
             width: 100%;
             margin-top: 8px;
         }
-        .btn-secondary:hover { background: rgba(100, 140, 255, 0.2); color: #c0c8e0; }
+        .btn-secondary:hover { background: var(--bg-card); color: var(--text-primary); }
 
         .info-box {
-            background: rgba(250, 204, 21, 0.05);
-            border: 1px solid rgba(250, 204, 21, 0.2);
-            border-radius: 12px;
-            padding: 15px;
-            margin-top: 15px;
-            font-size: 12px;
-            color: #d4a843;
-            line-height: 1.6;
+            background: var(--info-bg);
+            border: 2px solid var(--info-border);
+            border-radius: 14px;
+            padding: 20px;
+            margin-top: 18px;
+            font-size: 15px;
+            color: var(--info-color);
+            line-height: 1.7;
         }
-        .info-box strong { color: #f0c040; }
+        .info-box strong { 
+            color: var(--formula-color); 
+            font-size: 17px;
+            font-weight: 700;
+        }
 
         select {
             width: 100%;
             padding: 8px 12px;
-            background: #1a2040;
-            border: 1px solid rgba(100, 140, 255, 0.2);
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
             border-radius: 8px;
-            color: #c0c8e0;
+            color: var(--text-primary);
             font-size: 13px;
             font-family: 'Inter', sans-serif;
             outline: none;
             cursor: pointer;
         }
-        select:focus { border-color: rgba(96, 165, 250, 0.5); }
+        select:focus { border-color: var(--accent-blue); }
 
         .legend {
             display: flex;
@@ -232,7 +298,7 @@
             align-items: center;
             gap: 5px;
             font-size: 11px;
-            color: #8892b0;
+            color: var(--text-secondary);
         }
         .legend-dot {
             width: 10px;
@@ -246,11 +312,11 @@
             gap: 8px;
             margin-bottom: 10px;
             font-size: 13px;
-            color: #a0a8c0;
+            color: var(--text-muted);
             cursor: pointer;
         }
         .checkbox-group input[type="checkbox"] {
-            accent-color: #60a5fa;
+            accent-color: var(--accent-blue);
             width: 16px;
             height: 16px;
         }
@@ -259,11 +325,17 @@
 <body>
 
 <div class="app-header">
-    <div class="logo">⚛️</div>
-    <div>
-        <h1>Физика 7 класс — Виртуальные эксперименты</h1>
-        <div class="subtitle">По учебнику А.В. Перышкина • Интерактивный симулятор</div>
+    <div class="header-left">
+        <div class="logo">⚛️</div>
+        <div>
+            <h1>Физика 7 класс — Виртуальные эксперименты</h1>
+            <div class="subtitle">По учебнику А.В. Перышкина • Интерактивный симулятор</div>
+        </div>
     </div>
+    <button class="theme-toggle" id="themeToggle" title="Переключить тему">
+        <span id="themeIcon">🌙</span>
+        <span class="theme-label" id="themeLabel">Тёмная</span>
+    </button>
 </div>
 
 <div class="nav-tabs" id="navTabs">
@@ -286,7 +358,7 @@
     </div>
     <div class="sim-layout">
         <div class="canvas-wrapper">
-            <canvas id="canvasMotion" width="700" height="350"></canvas>
+            <canvas id="canvasMotion" data-width="800" data-height="400"></canvas>
             <div class="legend">
                 <div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div> Тело 1</div>
                 <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div> Тело 2</div>
@@ -331,7 +403,7 @@
     </div>
     <div class="sim-layout">
         <div class="canvas-wrapper">
-            <canvas id="canvasDensity" width="700" height="400"></canvas>
+            <canvas id="canvasDensity" data-width="800" data-height="450"></canvas>
             <div class="legend">
                 <div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div> Вода</div>
                 <div class="legend-item"><div class="legend-dot" style="background:#ef4444"></div> Тело</div>
@@ -389,7 +461,7 @@
     </div>
     <div class="sim-layout">
         <div class="canvas-wrapper">
-            <canvas id="canvasFriction" width="700" height="350"></canvas>
+            <canvas id="canvasFriction" data-width="800" data-height="400"></canvas>
         </div>
         <div class="controls-panel">
             <h3>Параметры</h3>
@@ -439,7 +511,7 @@
     </div>
     <div class="sim-layout">
         <div class="canvas-wrapper">
-            <canvas id="canvasPressure" width="700" height="400"></canvas>
+            <canvas id="canvasPressure" data-width="800" data-height="450"></canvas>
             <div class="legend">
                 <div class="legend-item"><div class="legend-dot" style="background:#ef4444"></div> Область давления</div>
                 <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div> Деформация поверхности</div>
@@ -452,7 +524,7 @@
                 <input type="range" id="pressMass" min="1" max="50" value="5">
             </div>
             <div class="control-group">
-                <label>Площадь опоры <span class="value" id="pressAreaVal">0.0010</span> м²</label>
+                <label>Площадь опоры <span class="value" id="pressAreaVal">10.0</span> см²</label>
                 <input type="range" id="pressArea" min="1" max="100" value="10">
             </div>
             <div class="control-group">
@@ -488,7 +560,7 @@
     </div>
     <div class="sim-layout">
         <div class="canvas-wrapper">
-            <canvas id="canvasArchimedes" width="700" height="400"></canvas>
+            <canvas id="canvasArchimedes" data-width="800" data-height="450"></canvas>
             <div class="legend">
                 <div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div> Жидкость</div>
                 <div class="legend-item"><div class="legend-dot" style="background:#10b981"></div> F Архимеда ↑</div>
@@ -535,7 +607,7 @@
     </div>
     <div class="sim-layout">
         <div class="canvas-wrapper">
-            <canvas id="canvasMolecules" width="700" height="400"></canvas>
+            <canvas id="canvasMolecules" data-width="800" data-height="450"></canvas>
             <div class="legend">
                 <div class="legend-item"><div class="legend-dot" style="background:#60a5fa"></div> Молекулы A</div>
                 <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div> Молекулы B (диффузия)</div>
@@ -585,7 +657,7 @@
     </div>
     <div class="sim-layout">
         <div class="canvas-wrapper">
-            <canvas id="canvasLever" width="700" height="400"></canvas>
+            <canvas id="canvasLever" data-width="800" data-height="450"></canvas>
         </div>
         <div class="controls-panel">
             <h3>Параметры</h3>
@@ -629,7 +701,7 @@
     </div>
     <div class="sim-layout">
         <div class="canvas-wrapper">
-            <canvas id="canvasWork" width="700" height="400"></canvas>
+            <canvas id="canvasWork" data-width="800" data-height="450"></canvas>
             <div class="legend">
                 <div class="legend-item"><div class="legend-dot" style="background:#10b981"></div> Направление силы</div>
                 <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div> Перемещение</div>
@@ -669,6 +741,34 @@
 </div>
 
 <script>
+// ==================== THEME TOGGLE ====================
+const themeToggle = document.getElementById('themeToggle');
+const themeIcon = document.getElementById('themeIcon');
+const themeLabel = document.getElementById('themeLabel');
+
+function setTheme(isDark) {
+    document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+    themeIcon.textContent = isDark ? '🌙' : '☀️';
+    themeLabel.textContent = isDark ? 'Тёмная' : 'Светлая';
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    
+    // Redraw all canvases with new theme
+    if (typeof redrawAllCanvases === 'function') {
+        redrawAllCanvases();
+    }
+}
+
+// Load saved theme
+const savedTheme = localStorage.getItem('theme');
+const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+const isDark = savedTheme ? savedTheme === 'dark' : prefersDark;
+setTheme(isDark);
+
+themeToggle.addEventListener('click', () => {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    setTheme(currentTheme === 'light');
+});
+
 // ==================== NAVIGATION ====================
 const tabs = document.querySelectorAll('.nav-tab');
 const containers = document.querySelectorAll('.experiment-container');
@@ -686,10 +786,39 @@ tabs.forEach(tab => {
 function lerp(a, b, t) { return a + (b - a) * t; }
 function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
 
+// ==================== HIGH DPI CANVAS SETUP ====================
+function setupCanvas(canvas) {
+    const dpr = window.devicePixelRatio || 1;
+    const logicalWidth = parseInt(canvas.dataset.width) || 800;
+    const logicalHeight = parseInt(canvas.dataset.height) || 450;
+    
+    canvas.width = logicalWidth * dpr;
+    canvas.height = logicalHeight * dpr;
+    canvas.style.width = logicalWidth + 'px';
+    canvas.style.height = logicalHeight + 'px';
+    
+    const ctx = canvas.getContext('2d');
+    ctx.scale(dpr, dpr);
+    
+    canvas.logicalWidth = logicalWidth;
+    canvas.logicalHeight = logicalHeight;
+    
+    return ctx;
+}
+
+const canvasIds = ['canvasMotion', 'canvasDensity', 'canvasFriction', 'canvasPressure', 
+                   'canvasArchimedes', 'canvasMolecules', 'canvasLever', 'canvasWork'];
+const canvasContexts = {};
+
+canvasIds.forEach(id => {
+    const canvas = document.getElementById(id);
+    if (canvas) canvasContexts[id] = setupCanvas(canvas);
+});
+
 // ==================== 1. MOTION SIMULATION ====================
 (function() {
     const canvas = document.getElementById('canvasMotion');
-    const ctx = canvas.getContext('2d');
+    const ctx = canvasContexts['canvasMotion'];
     let running = false;
     let time = 0;
     let animFrame;
@@ -706,35 +835,40 @@ function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
     v1Slider.oninput = v2Slider.oninput = distSlider.oninput = updateLabels;
 
     function draw() {
-        const W = canvas.width, H = canvas.height;
+        const W = canvas.logicalWidth, H = canvas.logicalHeight;
         ctx.clearRect(0, 0, W, H);
 
         const dist = parseInt(distSlider.value);
         const v1 = parseInt(v1Slider.value);
         const v2 = parseInt(v2Slider.value);
-        const finishX = 620;
-        const startX = 60;
+        const finishX = W - 80;
+        const startX = 80;
         const range = finishX - startX;
 
+        // Grid
         ctx.strokeStyle = 'rgba(100,140,255,0.06)';
         ctx.lineWidth = 1;
         for (let i = 0; i < W; i += 40) { ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, H); ctx.stroke(); }
         for (let i = 0; i < H; i += 40) { ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(W, i); ctx.stroke(); }
 
-        const y1 = 100, y2 = 230, trackH = 50;
+        const y1 = 110, y2 = 270, trackH = 60;
 
+        // Tracks
         ctx.fillStyle = '#1a2040';
-        ctx.fillRect(startX - 10, y1 - 5, range + 20, trackH + 10);
-        ctx.fillRect(startX - 10, y2 - 5, range + 20, trackH + 10);
+        ctx.fillRect(startX - 15, y1 - 10, range + 30, trackH + 20);
+        ctx.fillRect(startX - 15, y2 - 10, range + 30, trackH + 20);
 
+        // Finish line
         ctx.fillStyle = '#10b981';
-        ctx.fillRect(finishX - 2, y1 - 15, 4, trackH + 30);
-        ctx.font = '11px Inter';
-        ctx.fillText('ФИНИШ ' + dist + ' м', finishX - 35, y1 - 20);
+        ctx.fillRect(finishX - 3, y1 - 20, 6, trackH + 40);
+        ctx.font = 'bold 16px Inter';
+        ctx.fillStyle = '#10b981';
+        ctx.fillText('ФИНИШ: ' + dist + ' м', finishX - 50, y1 - 30);
 
-        ctx.setLineDash([15, 15]);
-        ctx.strokeStyle = 'rgba(255,255,255,0.15)';
-        ctx.lineWidth = 2;
+        // Track lines
+        ctx.setLineDash([20, 15]);
+        ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+        ctx.lineWidth = 3;
         ctx.beginPath(); ctx.moveTo(startX, y1 + trackH / 2); ctx.lineTo(finishX, y1 + trackH / 2); ctx.stroke();
         ctx.beginPath(); ctx.moveTo(startX, y2 + trackH / 2); ctx.lineTo(finishX, y2 + trackH / 2); ctx.stroke();
         ctx.setLineDash([]);
@@ -744,17 +878,19 @@ function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
         const pos1 = clamp((time / t1Finish) * range, 0, range);
         const pos2 = clamp((time / t2Finish) * range, 0, range);
 
-        ctx.fillStyle = 'rgba(59,130,246,0.15)'; ctx.fillRect(startX, y1 - 2, pos1, trackH + 4);
-        ctx.fillStyle = 'rgba(245,158,11,0.15)'; ctx.fillRect(startX, y2 - 2, pos2, trackH + 4);
+        // Progress bars
+        ctx.fillStyle = 'rgba(59,130,246,0.2)'; ctx.fillRect(startX, y1 - 5, pos1, trackH + 10);
+        ctx.fillStyle = 'rgba(245,158,11,0.2)'; ctx.fillRect(startX, y2 - 5, pos2, trackH + 10);
 
         drawCar(ctx, startX + pos1, y1 + trackH / 2, '#3b82f6', '#1d4ed8', v1);
         drawCar(ctx, startX + pos2, y2 + trackH / 2, '#f59e0b', '#d97706', v2);
 
-        ctx.font = 'bold 13px Inter';
-        ctx.fillStyle = '#3b82f6'; ctx.fillText('v₁ = ' + v1 + ' м/с', startX, y1 - 15);
-        ctx.fillStyle = '#f59e0b'; ctx.fillText('v₂ = ' + v2 + ' м/с', startX, y2 - 15);
+        // Labels
+        ctx.font = 'bold 18px Inter';
+        ctx.fillStyle = '#3b82f6'; ctx.fillText('v₁ = ' + v1 + ' м/с', startX, y1 - 25);
+        ctx.fillStyle = '#f59e0b'; ctx.fillText('v₂ = ' + v2 + ' м/с', startX, y2 - 25);
 
-        ctx.fillStyle = '#e0e6f0'; ctx.font = 'bold 16px Courier New'; ctx.fillText('t = ' + time.toFixed(1) + ' с', 30, 30);
+        ctx.fillStyle = '#e0e6f0'; ctx.font = 'bold 22px Courier New'; ctx.fillText('t = ' + time.toFixed(1) + ' с', 40, 45);
 
         if (running) {
             time += 0.033;
@@ -771,15 +907,19 @@ function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
 
     function drawCar(ctx, x, y, color, darkColor, speed) {
         const s = speed / 50;
-        const w = 40 + s * 15, h = 22;
-        ctx.fillStyle = color; ctx.beginPath(); ctx.roundRect(x - w / 2, y - h / 2 - 6, w, h - 4, 5); ctx.fill();
-        ctx.fillStyle = darkColor; ctx.beginPath(); ctx.roundRect(x - w / 4, y - h / 2 - 14, w / 2, 10, 4); ctx.fill();
+        const w = 55 + s * 20, h = 30;
+        // Body
+        ctx.fillStyle = color; ctx.beginPath(); ctx.roundRect(x - w / 2, y - h / 2 - 8, w, h - 4, 8); ctx.fill();
+        // Roof
+        ctx.fillStyle = darkColor; ctx.beginPath(); ctx.roundRect(x - w / 4, y - h / 2 - 22, w / 2, 16, 6); ctx.fill();
+        // Wheels
         ctx.fillStyle = '#1a2040';
-        ctx.beginPath(); ctx.arc(x - w / 3, y + 2, 6, 0, Math.PI * 2); ctx.fill();
-        ctx.beginPath(); ctx.arc(x + w / 3, y + 2, 6, 0, Math.PI * 2); ctx.fill();
-        ctx.strokeStyle = '#4a5070'; ctx.lineWidth = 1.5;
-        ctx.beginPath(); ctx.arc(x - w / 3, y + 2, 3, 0, Math.PI * 2); ctx.stroke();
-        ctx.beginPath(); ctx.arc(x + w / 3, y + 2, 3, 0, Math.PI * 2); ctx.stroke();
+        ctx.beginPath(); ctx.arc(x - w / 3, y + 4, 9, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(x + w / 3, y + 4, 9, 0, Math.PI * 2); ctx.fill();
+        // Wheel centers
+        ctx.strokeStyle = '#4a5070'; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.arc(x - w / 3, y + 4, 4, 0, Math.PI * 2); ctx.stroke();
+        ctx.beginPath(); ctx.arc(x + w / 3, y + 4, 4, 0, Math.PI * 2); ctx.stroke();
     }
 
     document.getElementById('startMotion').onclick = () => {
@@ -800,7 +940,7 @@ function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
 // ==================== 2. DENSITY SIMULATION ====================
 (function() {
     const canvas = document.getElementById('canvasDensity');
-    const ctx = canvas.getContext('2d');
+    const ctx = canvasContexts['canvasDensity'];
     let objY = 50, objVel = 0, animating = false, animFrame;
 
     const bodyDensitySlider = document.getElementById('bodyDensity');
@@ -819,37 +959,40 @@ function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
     };
 
     function draw() {
-        const W = canvas.width, H = canvas.height;
+        const W = canvas.logicalWidth, H = canvas.logicalHeight;
         ctx.clearRect(0, 0, W, H);
 
         const bodyDensity = parseFloat(bodyDensitySlider.value);
         const fluidDensity = parseFloat(fluidDensitySlider.value);
         const mass = parseFloat(bodyMassSlider.value);
         
-        // ИСПРАВЛЕНИЕ 1: Корректный расчет объема (без деления на 1000)
         const volume = mass / bodyDensity;
         const g = 9.8;
         const Fg = mass * g;
         const FA = fluidDensity * g * volume;
 
-        const waterLevel = 180, waterBottom = 360;
+        const waterLevel = 200, waterBottom = H - 50;
 
+        // Water
         const gradient = ctx.createLinearGradient(0, waterLevel, 0, waterBottom);
-        gradient.addColorStop(0, 'rgba(59,130,246,0.15)'); gradient.addColorStop(1, 'rgba(59,130,246,0.4)');
-        ctx.fillStyle = gradient; ctx.fillRect(80, waterLevel, W - 160, waterBottom - waterLevel);
+        gradient.addColorStop(0, 'rgba(59,130,246,0.2)'); gradient.addColorStop(1, 'rgba(59,130,246,0.45)');
+        ctx.fillStyle = gradient; ctx.fillRect(100, waterLevel, W - 200, waterBottom - waterLevel);
 
-        ctx.strokeStyle = 'rgba(96,165,250,0.5)'; ctx.lineWidth = 2; ctx.beginPath();
-        for (let x = 80; x < W - 80; x += 2) {
-            const y = waterLevel + Math.sin((x + Date.now() * 0.002) * 0.03) * 3;
-            if (x === 80) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        // Waves
+        ctx.strokeStyle = 'rgba(96,165,250,0.6)'; ctx.lineWidth = 3; ctx.beginPath();
+        for (let x = 100; x < W - 100; x += 2) {
+            const y = waterLevel + Math.sin((x + Date.now() * 0.002) * 0.03) * 4;
+            if (x === 100) ctx.moveTo(x, y); else ctx.lineTo(x, y);
         } ctx.stroke();
 
-        ctx.fillStyle = 'rgba(96,165,250,0.5)'; ctx.font = '12px Inter'; ctx.fillText('ρ = ' + fluidDensity + ' кг/м³', 100, waterLevel + 20);
+        ctx.fillStyle = 'rgba(96,165,250,0.7)'; ctx.font = 'bold 16px Inter'; 
+        ctx.fillText('ρ = ' + fluidDensity + ' кг/м³', 120, waterLevel + 30);
 
-        ctx.strokeStyle = 'rgba(100,140,255,0.2)'; ctx.lineWidth = 3; ctx.beginPath();
-        ctx.moveTo(80, 60); ctx.lineTo(80, waterBottom + 20); ctx.lineTo(W - 80, waterBottom + 20); ctx.lineTo(W - 80, 60); ctx.stroke();
+        // Container
+        ctx.strokeStyle = 'rgba(100,140,255,0.3)'; ctx.lineWidth = 4; ctx.beginPath();
+        ctx.moveTo(100, 60); ctx.lineTo(100, waterBottom + 20); ctx.lineTo(W - 100, waterBottom + 20); ctx.lineTo(W - 100, 60); ctx.stroke();
 
-        const objSize = 30 + mass * 8;
+        const objSize = 45 + mass * 12;
         const objX = W / 2;
 
         if (animating) {
@@ -862,18 +1005,20 @@ function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
                 objVel += acc * 0.016;
                 objVel *= 0.96;
             } else {
-                objVel += 9.8 * 0.016;
+                objVel += g * 0.016;
             }
             objY += objVel;
 
-            if (objY + objSize / 2 > waterBottom - 5) {
-                objY = waterBottom - 5 - objSize / 2; objVel *= -0.3;
+            if (objY + objSize / 2 > waterBottom - 8) {
+                objY = waterBottom - 8 - objSize / 2;
+                objVel *= -0.3;
                 if (Math.abs(objVel) < 0.5) objVel = 0;
             }
 
             if (bodyDensity < fluidDensity) {
-                const eqY = waterLevel - objSize / 2 * (1 - bodyDensity / fluidDensity);
-                if (objY > eqY && objVel > 0) {
+                const submergedFraction = bodyDensity / fluidDensity;
+                const eqY = waterLevel - objSize / 2 + objSize * submergedFraction;
+                if (objY > eqY - 5 && Math.abs(objVel) < 2) {
                     objY = lerp(objY, eqY, 0.05);
                     if (Math.abs(objY - eqY) < 1) objVel = 0;
                 }
@@ -881,22 +1026,26 @@ function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
         }
 
         const color = bodyDensity < fluidDensity ? '#22c55e' : '#ef4444';
-        ctx.fillStyle = color; ctx.beginPath(); ctx.roundRect(objX - objSize / 2, objY - objSize / 2, objSize, objSize, 5); ctx.fill();
-        ctx.strokeStyle = 'rgba(255,255,255,0.2)'; ctx.lineWidth = 1; ctx.stroke();
+        ctx.fillStyle = color; ctx.beginPath(); ctx.roundRect(objX - objSize / 2, objY - objSize / 2, objSize, objSize, 8); ctx.fill();
+        ctx.strokeStyle = 'rgba(255,255,255,0.3)'; ctx.lineWidth = 2; ctx.stroke();
 
-        ctx.fillStyle = '#e0e6f0'; ctx.font = 'bold 11px Inter'; ctx.textAlign = 'center'; ctx.fillText(mass + ' кг', objX, objY - objSize / 2 - 8);
+        ctx.fillStyle = '#fff'; ctx.font = 'bold 16px Inter'; ctx.textAlign = 'center'; 
+        ctx.fillText(mass + ' кг', objX, objY + 5);
 
-        const arrowX = objX + objSize / 2 + 30;
-        const gArrowLen = Math.min(Fg * 2, 80);
-        ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(arrowX, objY); ctx.lineTo(arrowX, objY + gArrowLen); ctx.stroke();
-        ctx.fillStyle = '#ef4444'; ctx.beginPath(); ctx.moveTo(arrowX, objY + gArrowLen + 6); ctx.lineTo(arrowX - 4, objY + gArrowLen - 2); ctx.lineTo(arrowX + 4, objY + gArrowLen - 2); ctx.fill();
-        ctx.fillText('Fт', arrowX, objY + gArrowLen + 16);
+        // Force arrows
+        const arrowX = objX + objSize / 2 + 40;
+        const gArrowLen = Math.min(Fg * 1.5, 70);
+        ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(arrowX, objY); ctx.lineTo(arrowX, objY + gArrowLen); ctx.stroke();
+        ctx.fillStyle = '#ef4444'; ctx.beginPath(); ctx.moveTo(arrowX, objY + gArrowLen + 10); 
+        ctx.lineTo(arrowX - 6, objY + gArrowLen - 4); ctx.lineTo(arrowX + 6, objY + gArrowLen - 4); ctx.fill();
+        ctx.font = 'bold 15px Inter'; ctx.fillText('Fт', arrowX, objY + gArrowLen + 28);
 
         if (objY + objSize / 2 > waterLevel) {
-            const FAArrowLen = Math.min(FA * 2, 80);
-            ctx.strokeStyle = '#22c55e'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(arrowX - 25, objY); ctx.lineTo(arrowX - 25, objY - FAArrowLen); ctx.stroke();
-            ctx.fillStyle = '#22c55e'; ctx.beginPath(); ctx.moveTo(arrowX - 25, objY - FAArrowLen - 6); ctx.lineTo(arrowX - 29, objY - FAArrowLen + 2); ctx.lineTo(arrowX - 21, objY - FAArrowLen + 2); ctx.fill();
-            ctx.fillText('FA', arrowX - 25, objY - FAArrowLen - 10);
+            const FAArrowLen = Math.min(FA * 1.5, 70);
+            ctx.strokeStyle = '#22c55e'; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(arrowX - 35, objY); ctx.lineTo(arrowX - 35, objY - FAArrowLen); ctx.stroke();
+            ctx.fillStyle = '#22c55e'; ctx.beginPath(); ctx.moveTo(arrowX - 35, objY - FAArrowLen - 10);
+            ctx.lineTo(arrowX - 41, objY - FAArrowLen + 4); ctx.lineTo(arrowX - 29, objY - FAArrowLen + 4); ctx.fill();
+            ctx.fillText('FA', arrowX - 35, objY - FAArrowLen - 18);
         }
         ctx.textAlign = 'left';
 
@@ -921,8 +1070,8 @@ function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
 // ==================== 3. FRICTION SIMULATION ====================
 (function() {
     const canvas = document.getElementById('canvasFriction');
-    const ctx = canvas.getContext('2d');
-    let animFrame, blockX = 150, blockVel = 0, isMoving = false;
+    const ctx = canvasContexts['canvasFriction'];
+    let animFrame, blockX = 180, blockVel = 0, isMoving = false;
 
     const appliedForceSlider = document.getElementById('appliedForce');
     const massSlider = document.getElementById('frictionMass');
@@ -938,7 +1087,7 @@ function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
     document.getElementById('surfaceSelect').onchange = function() { muSlider.value = this.value; updateLabels(); };
 
     function draw() {
-        const W = canvas.width, H = canvas.height;
+        const W = canvas.logicalWidth, H = canvas.logicalHeight;
         ctx.clearRect(0, 0, W, H);
 
         const appliedF = parseFloat(appliedForceSlider.value);
@@ -948,63 +1097,86 @@ function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
         const N = mass * g;
         const FfrictionMax = mu * N;
 
-        ctx.fillStyle = '#1a2040'; ctx.fillRect(50, 250, W - 100, H - 270);
-        ctx.fillStyle = 'rgba(100,140,255,0.05)';
-        for (let x = 50; x < W - 50; x += 15) { ctx.fillRect(x, 250, 8, 3); }
-        ctx.fillStyle = '#8892b0'; ctx.font = '12px Inter'; ctx.fillText('Поверхность (μ = ' + mu.toFixed(2) + ')', 70, 280);
+        // Surface
+        ctx.fillStyle = '#1a2040'; ctx.fillRect(60, 290, W - 120, H - 310);
+        ctx.fillStyle = 'rgba(100,140,255,0.08)';
+        for (let x = 60; x < W - 60; x += 18) { ctx.fillRect(x, 290, 10, 4); }
+        ctx.fillStyle = '#8892b0'; ctx.font = 'bold 16px Inter'; 
+        ctx.fillText('Поверхность (μ = ' + mu.toFixed(2) + ')', 90, 325);
 
-        const blockW = 60 + mass * 5, blockH = 40 + mass * 3;
-        const bx = blockX, by = 250 - blockH;
+        const blockW = 80 + mass * 6, blockH = 55 + mass * 4;
+        const bx = blockX, by = 290 - blockH;
 
-        ctx.fillStyle = 'rgba(0,0,0,0.2)'; ctx.fillRect(bx + 3, by + 3, blockW, blockH);
+        // Block shadow
+        ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.fillRect(bx + 4, by + 4, blockW, blockH);
+        
+        // Block
         const gradient = ctx.createLinearGradient(bx, by, bx, by + blockH);
         gradient.addColorStop(0, '#3b82f6'); gradient.addColorStop(1, '#1d4ed8');
-        ctx.fillStyle = gradient; ctx.beginPath(); ctx.roundRect(bx, by, blockW, blockH, 4); ctx.fill();
-        ctx.strokeStyle = 'rgba(255,255,255,0.15)'; ctx.lineWidth = 1; ctx.stroke();
-        ctx.fillStyle = '#fff'; ctx.font = 'bold 13px Inter'; ctx.textAlign = 'center'; ctx.fillText(mass + ' кг', bx + blockW / 2, by + blockH / 2 + 4);
+        ctx.fillStyle = gradient; ctx.beginPath(); ctx.roundRect(bx, by, blockW, blockH, 6); ctx.fill();
+        ctx.strokeStyle = 'rgba(255,255,255,0.2)'; ctx.lineWidth = 2; ctx.stroke();
+        ctx.fillStyle = '#fff'; ctx.font = 'bold 18px Inter'; ctx.textAlign = 'center'; 
+        ctx.fillText(mass + ' кг', bx + blockW / 2, by + blockH / 2 + 6);
 
-        const arrowScale = 1.5;
+        // Applied force arrow
+        const arrowScale = 1.2;
         if (appliedF > 0) {
-            const aLen = Math.min(appliedF * arrowScale, 150);
-            ctx.strokeStyle = '#f59e0b'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(bx - 30, by + blockH / 2); ctx.lineTo(bx - 30 + aLen, by + blockH / 2); ctx.stroke();
-            ctx.fillStyle = '#f59e0b'; ctx.beginPath(); ctx.moveTo(bx - 30 + aLen + 8, by + blockH / 2); ctx.lineTo(bx - 30 + aLen - 2, by + blockH / 2 - 5); ctx.lineTo(bx - 30 + aLen - 2, by + blockH / 2 + 5); ctx.fill();
-            ctx.font = '11px Inter'; ctx.fillText('F = ' + appliedF + ' Н', bx - 30 + aLen / 2, by + blockH / 2 - 12);
+            const aLen = Math.min(appliedF * arrowScale, 140);
+            ctx.strokeStyle = '#f59e0b'; ctx.lineWidth = 5; 
+            ctx.beginPath(); ctx.moveTo(bx - 40, by + blockH / 2); ctx.lineTo(bx - 40 + aLen, by + blockH / 2); ctx.stroke();
+            ctx.fillStyle = '#f59e0b'; ctx.beginPath(); 
+            ctx.moveTo(bx - 40 + aLen + 12, by + blockH / 2);
+            ctx.lineTo(bx - 40 + aLen - 4, by + blockH / 2 - 8);
+            ctx.lineTo(bx - 40 + aLen - 4, by + blockH / 2 + 8); ctx.fill();
+            ctx.font = 'bold 16px Inter'; ctx.fillText('F = ' + appliedF + ' Н', bx - 40 + aLen / 2, by + blockH / 2 - 18);
         }
 
+        // Friction force arrow
         if (isMoving || appliedF > 0) {
-            const fLen = Math.min(FfrictionMax * arrowScale, 150);
-            ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(bx + blockW + 30, by + blockH / 2); ctx.lineTo(bx + blockW + 30 - fLen, by + blockH / 2); ctx.stroke();
-            ctx.fillStyle = '#ef4444'; ctx.beginPath(); ctx.moveTo(bx + blockW + 30 - fLen - 8, by + blockH / 2); ctx.lineTo(bx + blockW + 30 - fLen + 2, by + blockH / 2 - 5); ctx.lineTo(bx + blockW + 30 - fLen + 2, by + blockH / 2 + 5); ctx.fill();
-            ctx.font = '11px Inter'; ctx.fillText('Fтр = ' + FfrictionMax.toFixed(1) + ' Н', bx + blockW + 30 - fLen / 2, by + blockH / 2 - 12);
+            const fLen = Math.min(FfrictionMax * arrowScale, 140);
+            ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 5;
+            ctx.beginPath(); ctx.moveTo(bx + blockW + 40, by + blockH / 2); ctx.lineTo(bx + blockW + 40 - fLen, by + blockH / 2); ctx.stroke();
+            ctx.fillStyle = '#ef4444'; ctx.beginPath();
+            ctx.moveTo(bx + blockW + 40 - fLen - 12, by + blockH / 2);
+            ctx.lineTo(bx + blockW + 40 - fLen + 4, by + blockH / 2 - 8);
+            ctx.lineTo(bx + blockW + 40 - fLen + 4, by + blockH / 2 + 8); ctx.fill();
+            ctx.font = 'bold 16px Inter'; ctx.fillText('Fтр = ' + FfrictionMax.toFixed(1) + ' Н', bx + blockW + 40 - fLen / 2, by + blockH / 2 - 18);
         }
 
-        ctx.strokeStyle = '#a78bfa'; ctx.lineWidth = 2; const gravLen = 40; ctx.beginPath(); ctx.moveTo(bx + blockW / 2, by + blockH + 10); ctx.lineTo(bx + blockW / 2, by + blockH + 10 + gravLen); ctx.stroke();
-        ctx.fillStyle = '#a78bfa'; ctx.beginPath(); ctx.moveTo(bx + blockW / 2, by + blockH + 10 + gravLen + 6); ctx.lineTo(bx + blockW / 2 - 4, by + blockH + 10 + gravLen - 2); ctx.lineTo(bx + blockW / 2 + 4, by + blockH + 10 + gravLen - 2); ctx.fill();
-        ctx.font = '10px Inter'; ctx.fillText('mg', bx + blockW / 2 + 10, by + blockH + 10 + gravLen / 2);
+        // Gravity arrow
+        ctx.strokeStyle = '#a78bfa'; ctx.lineWidth = 3; 
+        const gravLen = 50; 
+        ctx.beginPath(); ctx.moveTo(bx + blockW / 2, by + blockH + 15); ctx.lineTo(bx + blockW / 2, by + blockH + 15 + gravLen); ctx.stroke();
+        ctx.fillStyle = '#a78bfa'; ctx.beginPath();
+        ctx.moveTo(bx + blockW / 2, by + blockH + 15 + gravLen + 10);
+        ctx.lineTo(bx + blockW / 2 - 6, by + blockH + 15 + gravLen - 4);
+        ctx.lineTo(bx + blockW / 2 + 6, by + blockH + 15 + gravLen - 4); ctx.fill();
+        ctx.font = 'bold 14px Inter'; ctx.fillText('mg', bx + blockW / 2 + 15, by + blockH + 15 + gravLen / 2);
         ctx.textAlign = 'left';
 
-        // ИСПРАВЛЕНИЕ 3 и 4: Физика движения с правильной проверкой и замедлением
+        // Physics
         if (isMoving) {
-            const netForce = appliedF - FfrictionMax;
+            const frictionDirection = blockVel > 0 ? -1 : 1;
+            const frictionForce = FfrictionMax * frictionDirection;
+            const netForce = appliedF + frictionForce;
             const acc = netForce / mass;
             blockVel += acc * 0.016;
             
-            // Если скорость упала ниже нуля (сила трения остановила тело)
-            if (blockVel < 0) {
+            if (blockVel <= 0 && appliedF <= FfrictionMax) {
                 blockVel = 0;
-                isMoving = false; // Тело перешло в состояние покоя
+                isMoving = false;
             } else {
                 blockX += blockVel;
-                if (blockX > W - 150) {
-                    blockX = 150;
+                if (blockX > W - 180) {
+                    blockX = 180;
                     blockVel = 0;
                     isMoving = false;
                 }
             }
         }
 
-        const netF = appliedF - FfrictionMax;
-        const accDisplay = netF > 0 ? netF / mass : 0;
+        const netF = isMoving ? (appliedF - FfrictionMax) : Math.max(0, appliedF - FfrictionMax);
+        const accDisplay = isMoving ? netF / mass : 0;
         document.getElementById('maxFriction').textContent = FfrictionMax.toFixed(2) + ' Н';
         document.getElementById('netForce').textContent = (netF > 0 ? netF : 0).toFixed(2) + ' Н';
         document.getElementById('acceleration').textContent = accDisplay.toFixed(2) + ' м/с²';
@@ -1015,21 +1187,16 @@ function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
         animFrame = requestAnimationFrame(draw);
     }
 
-    // ИСПРАВЛЕНИЕ 3: Проверка преодоления силы трения покоя
     document.getElementById('pushFriction').onclick = () => {
         const appliedF = parseFloat(appliedForceSlider.value);
         const mass = parseFloat(massSlider.value);
         const mu = parseFloat(muSlider.value);
         const FfrictionMax = mu * mass * 9.8;
-        
-        if (appliedF > FfrictionMax) {
-            isMoving = true;
-            blockVel = 0;
-        }
+        if (appliedF > FfrictionMax) { isMoving = true; blockVel = 0; }
     };
 
     document.getElementById('resetFriction').onclick = () => {
-        isMoving = false; blockX = 150; blockVel = 0; appliedForceSlider.value = 0; updateLabels();
+        isMoving = false; blockX = 180; blockVel = 0; appliedForceSlider.value = 0; updateLabels();
         document.getElementById('frictionState').textContent = 'Покой';
         document.getElementById('frictionState').style.color = '#8892b0';
     };
@@ -1039,7 +1206,7 @@ function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
 // ==================== 4. PRESSURE SIMULATION ====================
 (function() {
     const canvas = document.getElementById('canvasPressure');
-    const ctx = canvas.getContext('2d');
+    const ctx = canvasContexts['canvasPressure'];
     let animFrame;
 
     const pressMass = document.getElementById('pressMass');
@@ -1047,63 +1214,75 @@ function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
 
     function updateLabels() {
         document.getElementById('pressMassVal').textContent = pressMass.value;
-        // ИСПРАВЛЕНИЕ 2: Корректный перевод см² в м² (деление на 10000)
-        const area = pressArea.value / 10000;
-        document.getElementById('pressAreaVal').textContent = area.toFixed(4);
+        document.getElementById('pressAreaVal').textContent = parseFloat(pressArea.value).toFixed(1);
     }
     pressMass.oninput = pressArea.oninput = updateLabels;
 
     document.getElementById('shapeSelect').onchange = () => draw();
 
     function draw() {
-        const W = canvas.width, H = canvas.height;
+        const W = canvas.logicalWidth, H = canvas.logicalHeight;
         ctx.clearRect(0, 0, W, H);
 
         const mass = parseFloat(pressMass.value);
         const areaCm2 = parseFloat(pressArea.value);
-        const area = areaCm2 / 10000; // ИСПРАВЛЕНИЕ 2: Формула внутри расчета
+        const area = areaCm2 / 10000;
         const shape = document.getElementById('shapeSelect').value;
 
-        const g = 9.8, F = mass * g, p = F / area;
+        const g = 9.8;
+        const F = mass * g;
+        const p = F / area;
 
-        const surfY = 280, deform = Math.min(p / 50000, 30);
+        const surfY = 310;
+        const deform = Math.min(p / 50000, 35);
 
+        // Surface
         ctx.fillStyle = '#1a2040'; ctx.beginPath();
-        ctx.moveTo(50, surfY); ctx.lineTo(W / 2 - 60, surfY);
-        ctx.quadraticCurveTo(W / 2, surfY + deform, W / 2 + 60, surfY);
-        ctx.lineTo(W - 50, surfY); ctx.lineTo(W - 50, H - 20); ctx.lineTo(50, H - 20); ctx.closePath(); ctx.fill();
+        ctx.moveTo(60, surfY); ctx.lineTo(W / 2 - 70, surfY);
+        ctx.quadraticCurveTo(W / 2, surfY + deform, W / 2 + 70, surfY);
+        ctx.lineTo(W - 60, surfY); ctx.lineTo(W - 60, H - 30); ctx.lineTo(60, H - 30); ctx.closePath(); ctx.fill();
 
-        ctx.strokeStyle = 'rgba(100,140,255,0.1)'; ctx.lineWidth = 1;
-        for (let y = surfY + 15; y < H - 20; y += 15) { ctx.beginPath(); ctx.moveTo(50, y); ctx.lineTo(W - 50, y); ctx.stroke(); }
+        ctx.strokeStyle = 'rgba(100,140,255,0.15)'; ctx.lineWidth = 1;
+        for (let y = surfY + 20; y < H - 30; y += 20) { ctx.beginPath(); ctx.moveTo(60, y); ctx.lineTo(W - 60, y); ctx.stroke(); }
 
         let objW, objH;
-        if (shape === 'block') { objW = 60; objH = 50; }
-        else if (shape === 'wide') { objW = 120; objH = 30; }
-        else { objW = 15; objH = 80; }
+        if (shape === 'block') { objW = 80; objH = 70; }
+        else if (shape === 'wide') { objW = 150; objH = 45; }
+        else { objW = 22; objH = 100; }
 
         const objX = W / 2 - objW / 2, objY = surfY - objH - deform;
 
-        const pressureIntensity = clamp(deform / 30, 0, 1);
-        ctx.fillStyle = `rgba(239,68,68,${pressureIntensity * 0.3})`; ctx.beginPath(); ctx.ellipse(W / 2, surfY + deform / 2, objW + 10, 15, 0, 0, Math.PI * 2); ctx.fill();
+        // Pressure glow
+        const pressureIntensity = clamp(deform / 35, 0, 1);
+        ctx.fillStyle = `rgba(239,68,68,${pressureIntensity * 0.4})`;
+        ctx.beginPath(); ctx.ellipse(W / 2, surfY + deform / 2, objW + 15, 20, 0, 0, Math.PI * 2); ctx.fill();
 
+        // Object
         const gradient = ctx.createLinearGradient(objX, objY, objX, objY + objH);
         gradient.addColorStop(0, '#3b82f6'); gradient.addColorStop(1, '#1e40af');
-        ctx.fillStyle = gradient; ctx.beginPath(); ctx.roundRect(objX, objY, objW, objH, shape === 'sharp' ? [4, 4, 1, 1] : 4); ctx.fill();
+        ctx.fillStyle = gradient; ctx.beginPath(); ctx.roundRect(objX, objY, objW, objH, shape === 'sharp' ? [6, 6, 2, 2] : 6); ctx.fill();
 
-        ctx.fillStyle = '#fff'; ctx.font = 'bold 12px Inter'; ctx.textAlign = 'center'; ctx.fillText(mass + ' кг', W / 2, objY + objH / 2 + 4);
+        ctx.fillStyle = '#fff'; ctx.font = 'bold 18px Inter'; ctx.textAlign = 'center'; 
+        ctx.fillText(mass + ' кг', W / 2, objY + objH / 2 + 6);
 
-        ctx.strokeStyle = '#f59e0b'; ctx.lineWidth = 3; const arrowStart = objY - 20, arrowLen = Math.min(F * 1.5, 100);
+        // Force arrow
+        ctx.strokeStyle = '#f59e0b'; ctx.lineWidth = 4;
+        const arrowStart = objY - 30, arrowLen = Math.min(F * 1.2, 100);
         ctx.beginPath(); ctx.moveTo(W / 2, arrowStart); ctx.lineTo(W / 2, arrowStart + arrowLen); ctx.stroke();
-        ctx.fillStyle = '#f59e0b'; ctx.beginPath(); ctx.moveTo(W / 2, arrowStart + arrowLen + 8); ctx.lineTo(W / 2 - 5, arrowStart + arrowLen - 2); ctx.lineTo(W / 2 + 5, arrowStart + arrowLen - 2); ctx.fill();
-        ctx.font = 'bold 11px Inter'; ctx.fillText('F = ' + F.toFixed(1) + ' Н', W / 2, arrowStart - 5);
+        ctx.fillStyle = '#f59e0b'; ctx.beginPath();
+        ctx.moveTo(W / 2, arrowStart + arrowLen + 12);
+        ctx.lineTo(W / 2 - 8, arrowStart + arrowLen - 4);
+        ctx.lineTo(W / 2 + 8, arrowStart + arrowLen - 4); ctx.fill();
+        ctx.font = 'bold 16px Inter'; ctx.fillText('F = ' + F.toFixed(1) + ' Н', W / 2, arrowStart - 12);
 
-        ctx.fillStyle = '#ef4444'; ctx.font = '13px Inter';
+        // Pressure label
+        ctx.fillStyle = '#ef4444'; ctx.font = 'bold 18px Inter';
         const pStr = p < 1000 ? p.toFixed(0) + ' Па' : (p / 1000).toFixed(1) + ' кПа';
-        ctx.fillText('p = ' + pStr, W / 2, surfY + deform + 30);
+        ctx.fillText('p = ' + pStr, W / 2, surfY + deform + 45);
         ctx.textAlign = 'left';
 
         document.getElementById('forceResult').textContent = F.toFixed(1) + ' Н';
-        document.getElementById('areaResult').textContent = area.toFixed(4) + ' м²';
+        document.getElementById('areaResult').textContent = area.toFixed(6) + ' м² (' + areaCm2.toFixed(1) + ' см²)';
         document.getElementById('pressureResult').textContent = pStr;
         document.getElementById('deformResult').textContent = deform.toFixed(1) + ' ед.';
 
@@ -1118,8 +1297,8 @@ function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
 // ==================== 5. ARCHIMEDES SIMULATION ====================
 (function() {
     const canvas = document.getElementById('canvasArchimedes');
-    const ctx = canvas.getContext('2d');
-    let animFrame, objY = 40, objVel = 0, animating = false;
+    const ctx = canvasContexts['canvasArchimedes'];
+    let animFrame, objY = 50, objVel = 0, animating = false;
 
     const archVol = document.getElementById('archVolume');
     const archMass = document.getElementById('archMass');
@@ -1131,69 +1310,89 @@ function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
     archVol.oninput = archMass.oninput = updateLabels;
 
     function draw() {
-        const W = canvas.width, H = canvas.height;
+        const W = canvas.logicalWidth, H = canvas.logicalHeight;
         ctx.clearRect(0, 0, W, H);
 
         const vol = archVol.value / 10000;
         const mass = parseFloat(archMass.value);
         const fluidDens = parseFloat(document.getElementById('archFluidSelect').value);
-        const g = 9.8, Fg = mass * g, FA = fluidDens * g * vol;
+        const g = 9.8;
+        const Fg = mass * g;
+        const FA = fluidDens * g * vol;
 
-        const waterLevel = 160, waterBottom = 360;
+        const waterLevel = 180, waterBottom = H - 50;
 
+        // Fluid
         const gradient = ctx.createLinearGradient(0, waterLevel, 0, waterBottom);
-        gradient.addColorStop(0, 'rgba(59,130,246,0.12)'); gradient.addColorStop(1, 'rgba(59,130,246,0.35)');
-        ctx.fillStyle = gradient; ctx.fillRect(100, waterLevel, W - 200, waterBottom - waterLevel);
+        gradient.addColorStop(0, 'rgba(59,130,246,0.15)'); gradient.addColorStop(1, 'rgba(59,130,246,0.4)');
+        ctx.fillStyle = gradient; ctx.fillRect(120, waterLevel, W - 240, waterBottom - waterLevel);
 
-        ctx.strokeStyle = 'rgba(96,165,250,0.4)'; ctx.lineWidth = 2; ctx.beginPath();
-        for (let x = 100; x < W - 100; x += 2) {
-            const y = waterLevel + Math.sin((x + Date.now() * 0.002) * 0.03) * 2;
-            if (x === 100) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        // Waves
+        ctx.strokeStyle = 'rgba(96,165,250,0.5)'; ctx.lineWidth = 3; ctx.beginPath();
+        for (let x = 120; x < W - 120; x += 2) {
+            const y = waterLevel + Math.sin((x + Date.now() * 0.002) * 0.03) * 3;
+            if (x === 120) ctx.moveTo(x, y); else ctx.lineTo(x, y);
         } ctx.stroke();
 
-        ctx.strokeStyle = 'rgba(100,140,255,0.2)'; ctx.lineWidth = 3; ctx.beginPath();
-        ctx.moveTo(100, 40); ctx.lineTo(100, waterBottom + 20); ctx.lineTo(W - 100, waterBottom + 20); ctx.lineTo(W - 100, 40); ctx.stroke();
+        // Container
+        ctx.strokeStyle = 'rgba(100,140,255,0.3)'; ctx.lineWidth = 4; ctx.beginPath();
+        ctx.moveTo(120, 50); ctx.lineTo(120, waterBottom + 20); ctx.lineTo(W - 120, waterBottom + 20); ctx.lineTo(W - 120, 50); ctx.stroke();
+
+        const objSize = 35 + vol * 350;
 
         if (animating) {
-            const objSize = 25 + vol * 300;
             const submerged = objY + objSize / 2 > waterLevel;
             if (submerged) {
                 const subRatio = clamp((objY + objSize / 2 - waterLevel) / objSize, 0, 1);
                 const FA_cur = FA * subRatio;
                 const net = Fg - FA_cur;
                 const acc = net / mass;
-                objVel += acc * 0.016; objVel *= 0.95;
-            } else { objVel += 9.8 * 0.016; }
+                objVel += acc * 0.016;
+                objVel *= 0.95;
+            } else {
+                objVel += g * 0.016;
+            }
             objY += objVel;
 
-            if (objY + objSize / 2 > waterBottom - 10) {
-                objY = waterBottom - 10 - objSize / 2; objVel *= -0.3;
+            if (objY + objSize / 2 > waterBottom - 12) {
+                objY = waterBottom - 12 - objSize / 2;
+                objVel *= -0.3;
                 if (Math.abs(objVel) < 0.3) objVel = 0;
             }
 
             if (FA > Fg) {
-                const eqY = waterLevel - objSize / 2 * (1 - mass / (fluidDens * vol));
-                if (objY > eqY && objVel > 0) {
+                const bodyDensity = mass / vol;
+                const submergedFraction = bodyDensity / fluidDens;
+                const eqY = waterLevel - objSize / 2 + objSize * submergedFraction;
+                if (objY > eqY - 5 && Math.abs(objVel) < 2) {
                     objY = lerp(objY, eqY, 0.05);
                     if (Math.abs(objY - eqY) < 0.5) objVel = 0;
                 }
             }
         }
 
-        const objSize = 25 + vol * 300, objX = W / 2;
+        const objX = W / 2;
         const color = FA > Fg ? '#22c55e' : '#ef4444';
         ctx.fillStyle = color; ctx.beginPath(); ctx.arc(objX, objY, objSize / 2, 0, Math.PI * 2); ctx.fill();
-        ctx.strokeStyle = 'rgba(255,255,255,0.2)'; ctx.lineWidth = 1; ctx.stroke();
+        ctx.strokeStyle = 'rgba(255,255,255,0.3)'; ctx.lineWidth = 2; ctx.stroke();
 
-        const arrowX = objX + objSize / 2 + 40, gLen = Math.min(Fg * 3, 80);
-        ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(arrowX, objY); ctx.lineTo(arrowX, objY + gLen); ctx.stroke();
-        ctx.fillStyle = '#ef4444'; ctx.beginPath(); ctx.moveTo(arrowX, objY + gLen + 6); ctx.lineTo(arrowX - 4, objY + gLen - 2); ctx.lineTo(arrowX + 4, objY + gLen - 2); ctx.fill();
-        ctx.fillStyle = '#ef4444'; ctx.font = 'bold 11px Inter'; ctx.fillText('Fт = ' + Fg.toFixed(2) + ' Н', arrowX + 8, objY + gLen / 2 + 4);
+        // Force arrows
+        const arrowX = objX + objSize / 2 + 50;
+        const gLen = Math.min(Fg * 2.5, 80);
+        ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(arrowX, objY); ctx.lineTo(arrowX, objY + gLen); ctx.stroke();
+        ctx.fillStyle = '#ef4444'; ctx.beginPath();
+        ctx.moveTo(arrowX, objY + gLen + 10);
+        ctx.lineTo(arrowX - 6, objY + gLen - 4);
+        ctx.lineTo(arrowX + 6, objY + gLen - 4); ctx.fill();
+        ctx.font = 'bold 15px Inter'; ctx.fillText('Fт = ' + Fg.toFixed(2) + ' Н', arrowX + 12, objY + gLen / 2 + 5);
 
-        const FALen = Math.min(FA * 3, 80);
-        ctx.strokeStyle = '#22c55e'; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(arrowX, objY); ctx.lineTo(arrowX, objY - FALen); ctx.stroke();
-        ctx.fillStyle = '#22c55e'; ctx.beginPath(); ctx.moveTo(arrowX, objY - FALen - 6); ctx.lineTo(arrowX - 4, objY - FALen + 2); ctx.lineTo(arrowX + 4, objY - FALen + 2); ctx.fill();
-        ctx.fillText('FA = ' + FA.toFixed(2) + ' Н', arrowX + 8, objY - FALen / 2 + 4);
+        const FALen = Math.min(FA * 2.5, 80);
+        ctx.strokeStyle = '#22c55e'; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(arrowX, objY); ctx.lineTo(arrowX, objY - FALen); ctx.stroke();
+        ctx.fillStyle = '#22c55e'; ctx.beginPath();
+        ctx.moveTo(arrowX, objY - FALen - 10);
+        ctx.lineTo(arrowX - 6, objY - FALen + 4);
+        ctx.lineTo(arrowX + 6, objY - FALen + 4); ctx.fill();
+        ctx.fillText('FA = ' + FA.toFixed(2) + ' Н', arrowX + 12, objY - FALen / 2 + 5);
 
         let state;
         if (FA > Fg) state = 'Всплывает ↑';
@@ -1208,15 +1407,15 @@ function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
         animFrame = requestAnimationFrame(draw);
     }
 
-    document.getElementById('dipArchimedes').onclick = () => { objY = 40; objVel = 0; animating = true; };
-    document.getElementById('resetArchimedes').onclick = () => { animating = false; objY = 40; objVel = 0; document.getElementById('archResultState').textContent = '—'; };
+    document.getElementById('dipArchimedes').onclick = () => { objY = 50; objVel = 0; animating = true; };
+    document.getElementById('resetArchimedes').onclick = () => { animating = false; objY = 50; objVel = 0; document.getElementById('archResultState').textContent = '—'; };
     draw();
 })();
 
 // ==================== 6. MOLECULES SIMULATION ====================
 (function() {
     const canvas = document.getElementById('canvasMolecules');
-    const ctx = canvas.getContext('2d');
+    const ctx = canvasContexts['canvasMolecules'];
     let animFrame, particles = [], running = false;
 
     const tempSlider = document.getElementById('temperature');
@@ -1232,11 +1431,11 @@ function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
         particles = [];
         const count = parseInt(molCountSlider.value);
         const state = document.getElementById('stateSelect').value;
-        const W = canvas.width, H = canvas.height;
+        const W = canvas.logicalWidth, H = canvas.logicalHeight;
 
         for (let i = 0; i < count; i++) {
             const isB = document.getElementById('showDiffusion').checked && i >= count / 2;
-            const margin = 30;
+            const margin = 40;
             let px, py;
 
             if (state === 'solid') {
@@ -1250,70 +1449,80 @@ function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
                 px = margin + Math.random() * (W - margin * 2);
                 py = margin + Math.random() * (H - margin * 2);
             }
-            particles.push({ x: px, y: py, ox: px, oy: py, vx: (Math.random() - 0.5) * 2, vy: (Math.random() - 0.5) * 2, isB: isB, radius: 4 });
+            particles.push({ x: px, y: py, ox: px, oy: py, vx: (Math.random() - 0.5) * 2, vy: (Math.random() - 0.5) * 2, isB: isB, radius: 6 });
         }
     }
 
     function draw() {
-        const W = canvas.width, H = canvas.height;
+        const W = canvas.logicalWidth, H = canvas.logicalHeight;
         ctx.clearRect(0, 0, W, H);
         if (!running) { animFrame = requestAnimationFrame(draw); return; }
 
         const temp = parseFloat(tempSlider.value);
         const state = document.getElementById('stateSelect').value;
         const showVectors = document.getElementById('showVectors').checked;
-        const speedFactor = temp / 300;
-        const border = 30;
+        const speedFactor = Math.sqrt(temp / 300);
+        const border = 40;
         let totalSpeed = 0;
 
-        particles.forEach((p, idx) => {
+        particles.forEach((p) => {
             if (state === 'solid') {
-                p.x = p.ox + (Math.random() - 0.5) * speedFactor * 2;
-                p.y = p.oy + (Math.random() - 0.5) * speedFactor * 2;
+                p.x = p.ox + (Math.random() - 0.5) * speedFactor * 3;
+                p.y = p.oy + (Math.random() - 0.5) * speedFactor * 3;
                 totalSpeed += speedFactor;
             } else if (state === 'liquid') {
-                p.vx += (Math.random() - 0.5) * speedFactor * 0.3;
-                p.vy += (Math.random() - 0.5) * speedFactor * 0.3;
+                p.vx += (Math.random() - 0.5) * speedFactor * 0.4;
+                p.vy += (Math.random() - 0.5) * speedFactor * 0.4;
                 p.vx *= 0.98; p.vy *= 0.98;
-                p.x += p.vx * speedFactor * 0.5; p.y += p.vy * speedFactor * 0.5;
+                p.x += p.vx * speedFactor * 0.5;
+                p.y += p.vy * speedFactor * 0.5;
                 totalSpeed += Math.sqrt(p.vx * p.vx + p.vy * p.vy) * speedFactor * 0.5;
-                if (p.x < border) { p.x = border; p.vx *= -1; } if (p.x > W - border) { p.x = W - border; p.vx *= -1; }
-                if (p.y < border) { p.y = border; p.vy *= -1; } if (p.y > H - border) { p.y = H - border; p.vy *= -1; }
+                if (p.x < border) { p.x = border; p.vx *= -1; }
+                if (p.x > W - border) { p.x = W - border; p.vx *= -1; }
+                if (p.y < border) { p.y = border; p.vy *= -1; }
+                if (p.y > H - border) { p.y = H - border; p.vy *= -1; }
             } else {
-                p.vx += (Math.random() - 0.5) * speedFactor * 0.5;
-                p.vy += (Math.random() - 0.5) * speedFactor * 0.5;
-                const maxSpd = speedFactor * 5, sp = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+                p.vx += (Math.random() - 0.5) * speedFactor * 0.6;
+                p.vy += (Math.random() - 0.5) * speedFactor * 0.6;
+                const maxSpd = speedFactor * 6, sp = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
                 if (sp > maxSpd) { p.vx = (p.vx / sp) * maxSpd; p.vy = (p.vy / sp) * maxSpd; }
-                p.x += p.vx; p.y += p.vy;
+                p.x += p.vx;
+                p.y += p.vy;
                 totalSpeed += Math.sqrt(p.vx * p.vx + p.vy * p.vy);
-                if (p.x < border) { p.x = border; p.vx *= -1; } if (p.x > W - border) { p.x = W - border; p.vx *= -1; }
-                if (p.y < border) { p.y = border; p.vy *= -1; } if (p.y > H - border) { p.y = H - border; p.vy *= -1; }
+                if (p.x < border) { p.x = border; p.vx *= -1; }
+                if (p.x > W - border) { p.x = W - border; p.vx *= -1; }
+                if (p.y < border) { p.y = border; p.vy *= -1; }
+                if (p.y > H - border) { p.y = H - border; p.vy *= -1; }
             }
         });
 
         particles.forEach(p => {
-            ctx.fillStyle = p.isB ? '#f59e0b' : '#60a5fa'; ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2); ctx.fill();
-            ctx.fillStyle = p.isB ? 'rgba(245,158,11,0.15)' : 'rgba(96,165,250,0.15)'; ctx.beginPath(); ctx.arc(p.x, p.y, p.radius * 2.5, 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = p.isB ? '#f59e0b' : '#60a5fa';
+            ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = p.isB ? 'rgba(245,158,11,0.2)' : 'rgba(96,165,250,0.2)';
+            ctx.beginPath(); ctx.arc(p.x, p.y, p.radius * 3, 0, Math.PI * 2); ctx.fill();
             if (showVectors && state !== 'solid') {
-                ctx.strokeStyle = p.isB ? 'rgba(245,158,11,0.4)' : 'rgba(96,165,250,0.4)'; ctx.lineWidth = 1;
-                ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x + p.vx * 8, p.y + p.vy * 8); ctx.stroke();
+                ctx.strokeStyle = p.isB ? 'rgba(245,158,11,0.5)' : 'rgba(96,165,250,0.5)'; ctx.lineWidth = 2;
+                ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x + p.vx * 10, p.y + p.vy * 10); ctx.stroke();
             }
         });
 
-        ctx.strokeStyle = 'rgba(100,140,255,0.15)'; ctx.lineWidth = 2; ctx.strokeRect(border - 1, border - 1, W - border * 2 + 2, H - border * 2 + 2);
+        ctx.strokeStyle = 'rgba(100,140,255,0.2)'; ctx.lineWidth = 3;
+        ctx.strokeRect(border - 2, border - 2, W - border * 2 + 4, H - border * 2 + 4);
         const stateLabels = { solid: 'Твёрдое тело', liquid: 'Жидкость', gas: 'Газ' };
-        ctx.fillStyle = '#8892b0'; ctx.font = '12px Inter'; ctx.fillText(stateLabels[state] + ' | T = ' + temp + ' К', border + 5, border + 15);
+        ctx.fillStyle = '#8892b0'; ctx.font = 'bold 16px Inter';
+        ctx.fillText(stateLabels[state] + ' | T = ' + temp + ' К', border + 8, border + 22);
 
         const avgSpd = particles.length > 0 ? totalSpeed / particles.length : 0;
         document.getElementById('avgSpeed').textContent = avgSpd.toFixed(2) + ' усл. ед.';
         document.getElementById('numMolecules').textContent = particles.length;
-        document.getElementById('relEnergy').textContent = (speedFactor).toFixed(2);
+        document.getElementById('relEnergy').textContent = speedFactor.toFixed(2);
 
         animFrame = requestAnimationFrame(draw);
     }
 
     document.getElementById('startMolecules').onclick = () => { running = true; initParticles(); };
-    document.getElementById('resetMolecules').onclick = () => { running = false; particles = []; ctx.clearRect(0, 0, canvas.width, canvas.height); };
+    document.getElementById('resetMolecules').onclick = () => { running = false; particles = []; ctx.clearRect(0, 0, canvas.logicalWidth, canvas.logicalHeight); };
     document.getElementById('stateSelect').onchange = () => { if (running) initParticles(); };
     document.getElementById('showDiffusion').onchange = () => { if (running) initParticles(); };
     draw();
@@ -1322,7 +1531,7 @@ function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
 // ==================== 7. LEVER SIMULATION ====================
 (function() {
     const canvas = document.getElementById('canvasLever');
-    const ctx = canvas.getContext('2d');
+    const ctx = canvasContexts['canvasLever'];
     let animFrame;
 
     const massL = document.getElementById('leverMassL');
@@ -1339,57 +1548,70 @@ function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
     massL.oninput = distL.oninput = massR.oninput = distR.oninput = updateLabels;
 
     function draw() {
-        const W = canvas.width, H = canvas.height;
+        const W = canvas.logicalWidth, H = canvas.logicalHeight;
         ctx.clearRect(0, 0, W, H);
 
         const mL = parseFloat(massL.value), dL = parseFloat(distL.value);
         const mR = parseFloat(massR.value), dR = parseFloat(distR.value);
-        const g = 9.8, ML = mL * g * dL, MR = mR * g * dR;
+        const g = 9.8;
+        const ML = mL * g * dL;
+        const MR = mR * g * dR;
 
         let angle = 0;
         if (Math.abs(ML - MR) > 0.1) {
-            angle = Math.atan2(MR - ML, 200) * 0.8;
+            angle = Math.atan2(MR - ML, 250) * 0.8;
             angle = clamp(angle, -0.3, 0.3);
         }
 
-        const centerX = W / 2, centerY = 200, leverLen = 250;
+        const centerX = W / 2, centerY = 230, leverLen = 280;
 
+        // Fulcrum
         ctx.fillStyle = '#4a5070'; ctx.beginPath();
-        ctx.moveTo(centerX, centerY + 15); ctx.lineTo(centerX - 15, centerY + 40); ctx.lineTo(centerX + 15, centerY + 40); ctx.closePath(); ctx.fill();
+        ctx.moveTo(centerX, centerY + 20); ctx.lineTo(centerX - 22, centerY + 50); ctx.lineTo(centerX + 22, centerY + 50); ctx.closePath(); ctx.fill();
 
         ctx.save(); ctx.translate(centerX, centerY); ctx.rotate(angle);
 
-        ctx.strokeStyle = '#60a5fa'; ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(-leverLen, 0); ctx.lineTo(leverLen, 0); ctx.stroke();
-        ctx.strokeStyle = 'rgba(100,140,255,0.3)'; ctx.lineWidth = 1;
-        for (let i = -5; i <= 5; i++) { if (i === 0) continue; ctx.beginPath(); ctx.moveTo(i * 50, -8); ctx.lineTo(i * 50, 8); ctx.stroke(); }
-
-        if (mL > 0) {
-            const lx = -dL * 50, wSize = 20 + mL * 5;
-            ctx.strokeStyle = 'rgba(100,140,255,0.5)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(lx, 0); ctx.lineTo(lx, 10); ctx.stroke();
-            ctx.fillStyle = '#3b82f6'; ctx.beginPath(); ctx.roundRect(lx - wSize / 2, 10, wSize, wSize, 4); ctx.fill();
-            ctx.fillStyle = '#fff'; ctx.font = 'bold 10px Inter'; ctx.textAlign = 'center'; ctx.fillText(mL + ' кг', lx, 10 + wSize / 2 + 3);
+        // Lever beam
+        ctx.strokeStyle = '#60a5fa'; ctx.lineWidth = 10; ctx.beginPath(); ctx.moveTo(-leverLen, 0); ctx.lineTo(leverLen, 0); ctx.stroke();
+        
+        // Distance markers
+        ctx.strokeStyle = 'rgba(100,140,255,0.4)'; ctx.lineWidth = 2;
+        for (let i = -5; i <= 5; i++) { 
+            if (i === 0) continue;
+            ctx.beginPath(); ctx.moveTo(i * 56, -12); ctx.lineTo(i * 56, 12); ctx.stroke();
         }
 
+        // Left weight
+        if (mL > 0) {
+            const lx = -dL * 56, wSize = 28 + mL * 6;
+            ctx.strokeStyle = 'rgba(100,140,255,0.6)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(lx, 0); ctx.lineTo(lx, 15); ctx.stroke();
+            ctx.fillStyle = '#3b82f6'; ctx.beginPath(); ctx.roundRect(lx - wSize / 2, 15, wSize, wSize, 6); ctx.fill();
+            ctx.fillStyle = '#fff'; ctx.font = 'bold 14px Inter'; ctx.textAlign = 'center'; ctx.fillText(mL + ' кг', lx, 15 + wSize / 2 + 5);
+        }
+
+        // Right weight
         if (mR > 0) {
-            const rx = dR * 50, wSize = 20 + mR * 5;
-            ctx.strokeStyle = 'rgba(245,158,11,0.5)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(rx, 0); ctx.lineTo(rx, 10); ctx.stroke();
-            ctx.fillStyle = '#f59e0b'; ctx.beginPath(); ctx.roundRect(rx - wSize / 2, 10, wSize, wSize, 4); ctx.fill();
-            ctx.fillStyle = '#fff'; ctx.font = 'bold 10px Inter'; ctx.textAlign = 'center'; ctx.fillText(mR + ' кг', rx, 10 + wSize / 2 + 3);
+            const rx = dR * 56, wSize = 28 + mR * 6;
+            ctx.strokeStyle = 'rgba(245,158,11,0.6)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(rx, 0); ctx.lineTo(rx, 15); ctx.stroke();
+            ctx.fillStyle = '#f59e0b'; ctx.beginPath(); ctx.roundRect(rx - wSize / 2, 15, wSize, wSize, 6); ctx.fill();
+            ctx.fillStyle = '#fff'; ctx.font = 'bold 14px Inter'; ctx.textAlign = 'center'; ctx.fillText(mR + ' кг', rx, 15 + wSize / 2 + 5);
         }
         ctx.restore();
 
-        ctx.textAlign = 'left'; ctx.font = 'bold 12px Inter';
-        ctx.fillStyle = '#3b82f6'; ctx.fillText('M₁ = ' + ML.toFixed(1) + ' Н·м', 30, 40);
-        ctx.fillStyle = '#f59e0b'; ctx.fillText('M₂ = ' + MR.toFixed(1) + ' Н·м', W - 180, 40);
+        // Moment labels
+        ctx.textAlign = 'left'; ctx.font = 'bold 16px Inter';
+        ctx.fillStyle = '#3b82f6'; ctx.fillText('M₁ = ' + ML.toFixed(1) + ' Н·м', 40, 50);
+        ctx.fillStyle = '#f59e0b'; ctx.fillText('M₂ = ' + MR.toFixed(1) + ' Н·м', W - 200, 50);
 
+        // State
         let state, color;
         if (Math.abs(ML - MR) < 0.5) { state = '⚖️ Равновесие!'; color = '#22c55e'; }
         else if (ML > MR) { state = '⬇️ Наклон влево'; color = '#3b82f6'; }
         else { state = '⬇️ Наклон вправо'; color = '#f59e0b'; }
 
-        ctx.fillStyle = color; ctx.font = 'bold 16px Inter'; ctx.textAlign = 'center'; ctx.fillText(state, W / 2, H - 30);
+        ctx.fillStyle = color; ctx.font = 'bold 22px Inter'; ctx.textAlign = 'center'; ctx.fillText(state, W / 2, H - 35);
 
-        const adv = mR > 0 ? (mL / mR).toFixed(2) : '∞';
+        const adv = mR > 0 && mL > 0 ? (dL / dR).toFixed(2) : '—';
         document.getElementById('momentL').textContent = ML.toFixed(2) + ' Н·м';
         document.getElementById('momentR').textContent = MR.toFixed(2) + ' Н·м';
         document.getElementById('leverState').textContent = state;
@@ -1406,7 +1628,7 @@ function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
 // ==================== 8. WORK SIMULATION ====================
 (function() {
     const canvas = document.getElementById('canvasWork');
-    const ctx = canvas.getContext('2d');
+    const ctx = canvasContexts['canvasWork'];
     let animFrame, running = false, progress = 0;
 
     const workForce = document.getElementById('workForce');
@@ -1423,52 +1645,63 @@ function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
     workForce.oninput = workDist.oninput = workTime.oninput = workAngle.oninput = updateLabels;
 
     function draw() {
-        const W = canvas.width, H = canvas.height;
+        const W = canvas.logicalWidth, H = canvas.logicalHeight;
         ctx.clearRect(0, 0, W, H);
 
         const F = parseFloat(workForce.value), S = parseFloat(workDist.value);
         const t = parseFloat(workTime.value), angle = parseFloat(workAngle.value) * Math.PI / 180;
-        const cosA = Math.cos(angle), A = F * S * cosA, N = A / t;
+        const cosA = Math.cos(angle);
+        const A = F * S * cosA;
+        const N = A / t;
 
-        const groundY = 250;
-        ctx.fillStyle = '#1a2040'; ctx.fillRect(40, groundY, W - 80, H - 270);
+        const groundY = 290;
+        ctx.fillStyle = '#1a2040'; ctx.fillRect(50, groundY, W - 100, H - 310);
 
-        ctx.strokeStyle = 'rgba(100,140,255,0.1)'; ctx.lineWidth = 1;
+        // Distance markers
+        ctx.strokeStyle = 'rgba(100,140,255,0.15)'; ctx.lineWidth = 2;
         for (let i = 0; i <= S; i++) {
-            const x = 80 + (i / S) * (W - 160);
-            ctx.beginPath(); ctx.moveTo(x, groundY); ctx.lineTo(x, groundY + 10); ctx.stroke();
-            ctx.fillStyle = '#8892b0'; ctx.font = '10px Inter'; ctx.textAlign = 'center'; ctx.fillText(i + ' м', x, groundY + 22);
+            const x = 90 + (i / S) * (W - 180);
+            ctx.beginPath(); ctx.moveTo(x, groundY); ctx.lineTo(x, groundY + 15); ctx.stroke();
+            ctx.fillStyle = '#8892b0'; ctx.font = '14px Inter'; ctx.textAlign = 'center'; ctx.fillText(i + ' м', x, groundY + 32);
         }
 
-        const boxStartX = 80, boxEndX = W - 120, boxX = boxStartX + progress * (boxEndX - boxStartX), boxSize = 35 + F / 10;
-        
-        ctx.fillStyle = 'rgba(96,165,250,0.08)'; ctx.fillRect(boxStartX, groundY - boxSize, boxX - boxStartX, boxSize);
+        const boxStartX = 90, boxEndX = W - 130;
+        const boxX = boxStartX + progress * (boxEndX - boxStartX);
+        const boxSize = 50 + F / 8;
 
+        // Path highlight
+        ctx.fillStyle = 'rgba(96,165,250,0.1)'; ctx.fillRect(boxStartX, groundY - boxSize, boxX - boxStartX, boxSize);
+
+        // Box
         const gradient = ctx.createLinearGradient(boxX, groundY - boxSize, boxX, groundY);
         gradient.addColorStop(0, '#3b82f6'); gradient.addColorStop(1, '#1e40af');
-        ctx.fillStyle = gradient; ctx.beginPath(); ctx.roundRect(boxX - boxSize / 2, groundY - boxSize, boxSize, boxSize, 4); ctx.fill();
+        ctx.fillStyle = gradient; ctx.beginPath(); ctx.roundRect(boxX - boxSize / 2, groundY - boxSize, boxSize, boxSize, 6); ctx.fill();
 
         if (running || progress > 0) {
-            const arrowLen = 40 + F * 0.5;
+            const effectiveForce = F * cosA;
+            const arrowLen = 50 + Math.abs(effectiveForce) * 0.4;
             const arrowEndX = boxX - Math.cos(angle) * arrowLen;
             const arrowEndY = (groundY - boxSize / 2) - Math.sin(angle) * arrowLen;
 
-            ctx.strokeStyle = '#10b981'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(arrowEndX, arrowEndY); ctx.lineTo(boxX, groundY - boxSize / 2); ctx.stroke();
+            ctx.strokeStyle = '#10b981'; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(arrowEndX, arrowEndY); ctx.lineTo(boxX, groundY - boxSize / 2); ctx.stroke();
             ctx.fillStyle = '#10b981'; ctx.beginPath();
-            ctx.moveTo(boxX + Math.cos(angle) * 8, groundY - boxSize / 2 - Math.sin(angle) * 8);
-            ctx.lineTo(boxX + Math.cos(angle) * 8 - Math.cos(angle - 0.3) * 10, groundY - boxSize / 2 - Math.sin(angle) * 8 + Math.sin(angle - 0.3) * 10);
-            ctx.lineTo(boxX + Math.cos(angle) * 8 - Math.cos(angle + 0.3) * 10, groundY - boxSize / 2 - Math.sin(angle) * 8 + Math.sin(angle + 0.3) * 10);
+            ctx.moveTo(boxX + Math.cos(angle) * 12, groundY - boxSize / 2 - Math.sin(angle) * 12);
+            ctx.lineTo(boxX + Math.cos(angle) * 12 - Math.cos(angle - 0.3) * 14, groundY - boxSize / 2 - Math.sin(angle) * 12 + Math.sin(angle - 0.3) * 14);
+            ctx.lineTo(boxX + Math.cos(angle) * 12 - Math.cos(angle + 0.3) * 14, groundY - boxSize / 2 - Math.sin(angle) * 12 + Math.sin(angle + 0.3) * 14);
             ctx.fill();
 
-            ctx.fillStyle = '#10b981'; ctx.font = 'bold 11px Inter'; ctx.textAlign = 'center'; ctx.fillText('F = ' + F + ' Н', arrowEndX - 10, arrowEndY - 10);
+            ctx.fillStyle = '#10b981'; ctx.font = 'bold 16px Inter'; ctx.textAlign = 'center';
+            ctx.fillText('F = ' + F + ' Н', arrowEndX - 15, arrowEndY - 15);
 
-            ctx.strokeStyle = 'rgba(250,204,21,0.5)'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(boxX, groundY - boxSize / 2, 25, -angle, 0); ctx.stroke();
-            ctx.fillStyle = '#f0c040'; ctx.font = '10px Inter'; ctx.fillText('α = ' + (angle * 180 / Math.PI).toFixed(0) + '°', boxX + 30, groundY - boxSize / 2 - 5);
+            // Angle arc
+            ctx.strokeStyle = 'rgba(250,204,21,0.6)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(boxX, groundY - boxSize / 2, 35, -angle, 0); ctx.stroke();
+            ctx.fillStyle = '#f0c040'; ctx.font = 'bold 14px Inter'; ctx.fillText('α = ' + (angle * 180 / Math.PI).toFixed(0) + '°', boxX + 45, groundY - boxSize / 2 - 8);
         }
         ctx.textAlign = 'left';
 
-        ctx.fillStyle = '#1a2040'; ctx.fillRect(80, groundY + 35, W - 160, 8);
-        ctx.fillStyle = '#10b981'; ctx.fillRect(80, groundY + 35, (W - 160) * progress, 8);
+        // Progress bar
+        ctx.fillStyle = '#1a2040'; ctx.fillRect(90, groundY + 50, W - 180, 12);
+        ctx.fillStyle = '#10b981'; ctx.fillRect(90, groundY + 50, (W - 180) * progress, 12);
 
         if (running) {
             progress += 1 / (t * 60);
@@ -1506,3 +1739,4 @@ if (!CanvasRenderingContext2D.prototype.roundRect) {
 </script>
 </body>
 </html>
+
